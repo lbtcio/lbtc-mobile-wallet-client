@@ -1,6 +1,3 @@
-<img src="https://lbtc.io/wallet/static/pic/96x96.png">
-<br/>
-<br/>
 lbtc-mobile-wallet-client
 =========================
 

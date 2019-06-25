@@ -2,24 +2,36 @@
  * Api 
  */
 
+import wConfig from "../wallet/config";
+
+const baseURLObj = {
+  'bitcoin': 'http://47.75.150.5:8080/',
+  'testnet': 'http://47.75.150.5:8822/'
+}
+
 let api = {
-    title: '',
-    baseURL: 'http://47.75.150.5:8080/',
-    api: {
-        getBalanceByAdd: 'mgetbalance',
-        getTxByAddr: "mgettxbyaddr",
-        listUnspent: 'mlistunspent',
-        getListDelegates: 'mgetlistdelegates',
-        getVoteByAddr: 'mgetvotebyaddress',
-        getVotersByAddr: 'mgetvotersbywitness',
-        gettxinfo: 'mgettxinfo',
+  title: '',
+  baseURL: baseURLObj[wConfig.network],
+  api: {
+    getversion: 'mgetversion',
+    getHeight: 'mgetblockcount',
+    getTxByAddr: "mgettxbyaddr",
+    gettxinfo: 'mgettxinfo',
+    msendrawtransaction: 'msendrawtransaction',
+    // Nodes
+    getListDelegates: 'mgetlistdelegates',
+    getVoteByAddr: 'mgetvotebyaddress',
+    getVotersByAddr: 'mgetvotersbywitness',
+    // News
+    getNewsList: 'mgetnews',
+    getNewsList2: 'mgetnews2',
+    // Token
+    gettokeninfo: 'gettokeninfo',
+    gettokeninfobyaddr: 'gettokeninfobyaddr',
 
-        getHeight:'mgetblockcount',
-        getversion: 'mgetversion',
-        getNewsList: 'mgetnews',
-
-        msendrawtransaction: 'msendrawtransaction'
-    }
+    // getBalanceByAdd: 'mgetbalance',
+    // listUnspent: 'mlistunspent'
+  }
 }
 
 

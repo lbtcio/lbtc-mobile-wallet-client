@@ -44,11 +44,11 @@
 </style>
 <template>
   <div id="mine-tx-hisInfo">
-    <van-nav-bar :title="$t('mine.txHisInfo.navTitle')" fixed left-arrow @click-left="onClickLeft" />
+    <van-nav-bar :z-index="1000" :title="$t('mine.txHisInfo.navTitle')" fixed left-arrow @click-left="$router.goBack()" />
 
     <div class="container fixed-container">
       <div class="hisInfo-header text-center">
-        <img class="hisInfo-icon" src="http://lbtc.io/wallet/static/img/success@2x.png" alt="">
+        <img class="hisInfo-icon" src="https://lbtc.io/wallet/static/img/success@2x.png" alt="">
         <div class="hisInfo-value" :class="txInfo.type == 's' ? 'send' : 're' ">
           {{txInfo.type == 's' ? '-' : '+'}}{{txInfo.value}} LBTC
         </div>
@@ -62,7 +62,7 @@
             <div v-if="i.coinbase">
               Coinbase
             </div>
-            <div v-if="!i.coinbase" v-clipboard:copy="i.addr" v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <div class="hash" v-if="!i.coinbase" v-clipboard:copy="i.addr" v-clipboard:success="onCopy" v-clipboard:error="onError">
               {{i.addr}}
             </div>
           </div>
@@ -78,17 +78,17 @@
             <div v-if="i.scriptPubKey.type == 'nulldata'">
               {{'Unknown'}}
             </div>
-            <div v-if="i.scriptPubKey.type != 'nulldata'" v-clipboard:copy="i.scriptPubKey.addresses[0]" v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <div class="hash" v-if="i.scriptPubKey.type != 'nulldata'" v-clipboard:copy="i.scriptPubKey.addresses[0]" v-clipboard:success="onCopy" v-clipboard:error="onError">
               {{i.scriptPubKey.addresses[0]}}
             </div>
           </div>
         </div>
-        <div class="hisInfo-item">
+        <div class="hisInfo-item" v-if="txInfo.fee">
           <div class="hisInfo-item-title">
-            
+            Fee
           </div>
           <div class="hisInfo-item-content">
-            
+            {{txInfo.fee}}
           </div>
         </div>
       </div>
@@ -98,16 +98,16 @@
             <div class="hisInfo-item-title">
               {{$t('mine.txHisInfo.title3')}}
             </div>
-            <div class="hisInfo-item-content" v-clipboard:copy="txInfo.hash" v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <div class="hisInfo-item-content hash" v-clipboard:copy="txInfo.hash" v-clipboard:success="onCopy" v-clipboard:error="onError">
               {{txInfo.hash | formatHash}}
             </div>
           </div>
-          <div class="hisInfo-item">
+          <div class="hisInfo-item" v-if="txInfo.height">
             <div class="hisInfo-item-title">
               {{$t('mine.txHisInfo.title4')}}
             </div>
-            <div class="hisInfo-item-content" v-clipboard:copy="txInfo.blockhash" v-clipboard:success="onCopy" v-clipboard:error="onError">
-              {{txInfo.blockhash | formatHash}}
+            <div class="hisInfo-item-content hash" v-clipboard:copy="txInfo.blockhash" v-clipboard:success="onCopy" v-clipboard:error="onError">
+              {{txInfo.height}}
             </div>
           </div>
           <div class="hisInfo-item">
@@ -161,25 +161,20 @@ export default {
         this.$router.back();
       }
     },
-    onClickLeft() {
-      this.$router.back();
-    },
+    
     onCopy() {
       Toast.success({
         duration: 1500,
         message: this.$t('mine.txHisInfo.title7')
       });
     },
+
     onError() {
       Toast.fail({
         duration: 1500,
         message: this.$t('mine.txHisInfo.title8')
       });
     }
-  },
-  destroyed(){},
-  watch:{
-    
-  },
+  }
 }
 </script>

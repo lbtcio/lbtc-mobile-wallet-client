@@ -28,7 +28,7 @@
 </style>
 <template>
   <div id="mine-addrInfo">
-    <van-nav-bar
+    <van-nav-bar :z-index="1000" 
       :title="$t('mine.addrInfo.navTitle')"
       left-arrow
       @click-left="onClickLeft"
@@ -44,7 +44,7 @@
         <label for="toAddr">
           {{$t('mine.addrInfo.addr')}}
         </label>
-        <input type="text" id="toAddr" :placeholder="$t('mine.addrInfo.addrPlaceholder')" v-model="addr"/>
+        <input class="hash" type="text" id="toAddr" :placeholder="$t('mine.addrInfo.addrPlaceholder')" v-model="addr"/>
       </div>
       <div class="addrInfo-item">
         <label for="value">
@@ -85,12 +85,12 @@ export default {
   },
   mounted(){},
   methods:{
-    onClickLeft() {
-      this.$router.back();
-    },
-
     setData(param) {
       this.isFromSend = true;
+    },
+
+    onClickLeft() {
+      this.$router.replace({ path:'/mine-addrs' });
     },
 
     addrInfoInit() {
@@ -155,10 +155,10 @@ export default {
               message: this.$t('mine.addrInfo.msg4')
             });
             if (this.isFromSend) {
-              this.$router.push({ path: '/wallet-send', query: { toaddr: this.addr}})
+              this.$router.replace({ path: '/wallet-send', query: { toaddr: this.addr}});
               return false
             } else {
-              this.$router.push({ path:'/mine-addrs' });
+              this.$router.replace({ path:'/mine-addrs' });
               return false
             }
           }
@@ -185,10 +185,10 @@ export default {
               message: this.$t('mine.addrInfo.msg6')
             });
             if (this.isFromSend) {
-              this.$router.push({ path: '/wallet-send', query: { toaddr: this.addr}})
+              this.$router.replace({ path: '/wallet-send', query: { toaddr: this.addr}})
               return false
             } else {
-              this.$router.push({ path:'/mine-addrs' });
+              this.$router.replace({ path:'/mine-addrs' });
               return false
             }
           }
@@ -222,10 +222,10 @@ export default {
               message: this.$t('mine.addrInfo.msg8')
             });
             if (this.isFromSend) {
-              this.$router.push({ path: '/wallet-send' })
+              this.$router.replace({ path: '/wallet-send' })
               return false
             } else {
-              this.$router.push({ path:'/mine-addrs' });
+              this.$router.replace({ path:'/mine-addrs' });
               return false
             }
           }
@@ -240,20 +240,15 @@ export default {
       })
     }
   },
-  destroyed(){},
-  watch:{
-    $route(to, from) {
-      
-    }
-  },
   beforeRouteEnter (to, from, next) {
     if (from.name == 'wallet-send') {
       next(vm => vm.setData(true))
     }
     next()
   },
-  beforeRouteUpdate (to, from, next) {
-    next()
+  beforeRouteLeave (to, from, next) {
+    this.$dialog.close();
+    next();
   },
 }
 </script>

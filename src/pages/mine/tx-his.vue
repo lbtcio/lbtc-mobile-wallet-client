@@ -6,34 +6,24 @@
     display: block;
     margin: 30px auto 10px;
   }
-  .list-enter-active {
-    transition: all 1s;
-  }
-  .list-leave-active {
-    transition: all 0.2s;
-  }
-  .list-enter, .list-leave-to {
-    opacity: 0;
-    transform: translateY(30px);
-  }
 }
 </style>
 <template>
   <div id="mine-tx-his">
-    <van-nav-bar :title="$t('mine.txHis.navTitle')" fixed left-arrow @click-left="onClickLeft" />
+    <van-nav-bar :z-index="1000" :title="$t('mine.txHis.navTitle')" fixed left-arrow @click-left="isBack()" />
 
     <scroller class="container fixed-container" :on-refresh="refresh" :on-infinite="infinite" :refreshText="$t('main.refresh')" :noDataText="$t('main.noMoreData')" ref="myscroller">
 
       <p>{{$t('mine.txHis.title')}}</p>
       <div class="text-center f666" v-if="nodata">
-        <img class="nodata" src="http://lbtc.io/wallet/static/img/nodata.png">
+        <img class="nodata" src="https://lbtc.io/wallet/static/img/nodata.png">
         {{$t('mine.txHis.msg1')}}
       </div>
 
-      <div v-if="!nodata" is="transition-group" name="list">
+      <div v-if="!nodata">
         <div class="tx-item" v-for="(item, index) in showTxs" @click="toHisInfo(item)" :key="item.hash + index">
           <div class="tx-type">
-              <img :src="item.type ? 'http://lbtc.io/wallet/static/img/wallet-' + item.type + '.png' : 'http://lbtc.io/wallet/static/img/wallet-r.png'">
+              <img :src="item.type ? 'https://lbtc.io/wallet/static/img/wallet-' + item.type + '.png' : 'https://lbtc.io/wallet/static/img/wallet-r.png'">
           </div>
           <div class="tx-info">
             <div class="tx-id ellipsis">{{item.hash | formatHash}}</div>
@@ -72,11 +62,17 @@ export default {
     }
   },
   computed:{
-    x() {
-      return this.$store.state.txHis.x;
+    save_current_wallet() {
+      return this.$store.state.home.save_current_wallet;
     },
-    y() {
-      return this.$store.state.txHis.y;
+    save_txsDetails() {
+      return this.$store.state.home.save_txsDetails;
+    },
+    save_UnSpent() {
+      return this.$store.state.home.save_UnSpent;
+    },
+    historyLocation() {
+      return this.$store.state.historyLocation;
     }
   },
   created(){
@@ -86,35 +82,51 @@ export default {
     
   },
   methods:{
-    hisInit() {
-
-      this.localforage.getItem('current_wallet').then( res => {
-        if (res) {
-          this.current_wallet = res;
-          Promise.all([this.localforage.getItem(res + '+txsDetails'), this.localforage.getItem(res + '+unspent')]).then( data => {
-            if (data[0] && data[1]) {
-              this.txsDetails = data[0];
-              if (this.txsDetails.txsList.length) {
-                this.showTxs = this.txsDetails.txsList.slice(0, this.page * this.pageCount);
-                this.totalPage = Math.ceil(this.txsDetails.txsList.length / this.pageCount);
-                this.nodata = false;
-              } else {
-                this.nodata = true;
-              }
-              setTimeout( ()=> {
-                this.$refs.myscroller.scrollTo(this.x, this.y);
-              },10)
-              this.UnSpent = data[1];
-            }
-          })
-        } else {
-          this.$router.push({ path: "/create-index" });
-        }
-      })
+    isBack() {
+      this.$store.commit('setHistoryLocation', {
+        left: 0,
+        top: 0,
+        page: 1
+      });
+      this.$router.goBack();
     },
 
-    onClickLeft() {
-      this.$router.back();
+    hisInit() {
+      if (this.save_current_wallet && this.save_txsDetails.txsList) {
+        this.current_wallet = this.save_current_wallet;
+        this.txsDetails = this.save_txsDetails;
+        this.UnSpent = this.save_UnSpent;
+        this.page = this.historyLocation.page;
+        if (this.save_txsDetails.txsList.length) {
+          this.showTxs = this.txsDetails.txsList.slice(0, this.page * this.pageCount);
+          this.totalPage = Math.ceil(this.txsDetails.txsList.length / this.pageCount);
+          this.nodata = false;
+          setTimeout( ()=> {
+            this.$refs.myscroller.scrollTo(this.historyLocation.left, this.historyLocation.top);
+          },100)
+        }
+      } else {
+        this.localforage.getItem('current_wallet').then( res => {
+          if (res) {
+            this.current_wallet = res;
+            Promise.all([this.localforage.getItem(res + '+txsDetails'), this.localforage.getItem(res + '+unspent')]).then( data => {
+              if (data[0] && data[1]) {
+                this.txsDetails = data[0];
+                if (this.txsDetails.txsList.length) {
+                  this.showTxs = this.txsDetails.txsList.slice(0, this.page * this.pageCount);
+                  this.totalPage = Math.ceil(this.txsDetails.txsList.length / this.pageCount);
+                  this.nodata = false;
+                } else {
+                  this.nodata = true;
+                }
+                this.UnSpent = data[1];
+              }
+            })
+          } else {
+            this.$router.push({ path: "/create-index" });
+          }
+        })
+      }
     },
 
     refresh(done) {
@@ -157,9 +169,6 @@ export default {
     },
 
     getTxsDetails(tx_list, total_height, current_wallet, done) {
-      // let txsDetails = {};
-      let proList = [];
-      let txsList = [];
       let newUnSpent = {};
 
       if (tx_list.length) {
@@ -172,10 +181,11 @@ export default {
           newUnSpent = this.Wallet.addListUnSpent(txsList, current_wallet, total_height, this.UnSpent);
           this.txsDetails.current_height = total_height;
           this.txsDetails.txsList = txsList.concat(this.txsDetails.txsList);
+          this.UnSpent = newUnSpent;
           return Promise.resolve(
             Promise.all([
-              this.localforage.setItem(current_wallet + "+unspent", newUnSpent),
-              this.localforage.setItem(current_wallet + "+txsDetails", txsDetails)
+              this.localforage.setItem(current_wallet + "+unspent", this.UnSpent),
+              this.localforage.setItem(current_wallet + "+txsDetails", this.txsDetails)
             ]).then( res => {
               return Promise.resolve(res)
             })
@@ -226,18 +236,13 @@ export default {
 
     toHisInfo(param) {
       let {left, top} = this.$refs.myscroller.getPosition()
-      this.$store.commit('saveTxHisXY', {
+      this.$store.commit('setHistoryLocation', {
         left: left,
         top: top,
         page: this.page
       });
       this.$router.push({ path:'/mine-tx-hisInfo', query: { txInfo: JSON.stringify(param)} });
-    },
-
-    
-
-  },
-  destroyed(){},
-  watch:{},
+    }
+  }
 }
 </script>

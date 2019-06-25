@@ -5,22 +5,22 @@
 </style>
 <template>
   <div id="create-packup">
-    <van-nav-bar
+    <van-nav-bar :z-index="1000" 
       :title="$t('create.packup.navTitle')"
       left-arrow
-      @click-left="onClickLeft"
+      @click-left="$router.goBack()"
     />
 
     <div class="container">
       <div class="input-group">
         <div class="text-center">
-          <img class="msg-icon" src="http://lbtc.io/wallet/static/img/safe@2x.png" alt="">
+          <img class="msg-icon" src="https://lbtc.io/wallet/static/img/safe@2x.png" alt="">
           <h3>{{$t('create.packup.title')}}</h3>
         </div>
         <p>{{$t('create.packup.content')}}</p>
         <button class="default" @click="openPassDialogAction()">{{$t('create.packup.button1')}}</button>
         <p class="text-center">
-          <router-link class="f666" to='/main-index'>{{$t('create.packup.button2')}}</router-link>
+          <router-link class="f666" to='/main-index/wallet'>{{$t('create.packup.button2')}}</router-link>
         </p>
       </div>
     </div>
@@ -48,22 +48,21 @@ export default {
   props: {},
   data() {
     return {
-      deFalse: false,
-      checked: false,
-      wallet_list: {},
-      wallet_info: {},
+      addr: '',
       psw: '',
-      openPassDialog: false,
-      openWarnDialog: false,
+      openPassDialog: false
     };
   },
   computed: {},
-  created() {},
+  created() {
+    if (this.$route.query && this.$route.query.addr) {
+      this.addr = this.$route.query.addr;
+    } else {
+      this.addr = this.walletDB.current;
+    }
+  },
   mounted() {},
   methods: {
-    onClickLeft() {
-      this.$router.back();
-    },
     onClickRight() {
       return false
     },
@@ -72,35 +71,22 @@ export default {
     },
     beforePassDialogClose(action, done) {
       if (action === 'confirm') {
-        Promise.all([this.localforage.getItem("wallet_list"), this.localforage.getItem("current_wallet")]).then( data => {
-          if (data) {
-            this.wallet_list = data[0];
-            this.wallet_info = data[0][data[1]];
-            if (this.wallet_info.psw == this.psw) {
-              done();
-              this.$router.push({ path: "/create-mnemonic", query: { wallet_info: JSON.stringify(this.wallet_info)} });
-            } else {
-              Toast.fail({
-                duration: 1000,
-                message: this.$t('create.packup.msg1')
-              });
-              this.psw = '';
-              done(false);
-            }
-          } else {
-            Toast.fail({
-              duration: 1500,
-              message: this.$t('create.packup.msg2')
-            });
-          }
-        })
+        if (this.psw == this.walletDB.accounts[this.addr].password) {
+          done();
+          this.$router.push({ path: "/create-mnemonic", query: { wallet_info: JSON.stringify(this.walletDB.accounts[this.addr])} });
+        } else {
+          Toast.fail({
+            duration: 1000,
+            message: this.$t('create.packup.msg1')
+          });
+          this.psw = '';
+          done(false);
+        }
       } else {
         this.psw = '';
         done();
       }
     },
-  },
-  destroyed() {},
-  watch: {}
+  }
 };
 </script>

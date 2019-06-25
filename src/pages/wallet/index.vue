@@ -1,83 +1,121 @@
 <style lang="scss" scoped>
 #wallet-index {
-  .photo {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    bottom: 10px;
-    right: 0;
-    border-radius: 50%;
-    background-color: #fff;
-    overflow: hidden;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
   .wallet-header {
-    // margin-top: 52px;
-    box-shadow: 0px 2px 2px 0px rgba(29, 90, 163, 0.2);
-    .header-top {
-      padding: 20px 0;
-    }
-    .header-logo {
-      width: 100px;
-      height: auto;
-    }
-    .header-balance {
-      font-size: 20px;
-      font-weight: 600;
-      color: #1d5aa3;
-      position: relative;
-      .more-balance-content {
-        padding: 2px 5px;
-        width: 50%;
-        position: absolute;
-        font-size: 10px;
-        text-align: left;
-        left: 0;
-        right: 0;
-        margin-left: auto;
-        margin-right: auto;
-        overflow: visible;
-        background-color: #eee;
+    color: #fff;
+    height: 230px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: linear-gradient(135deg, #1c59a2 0, rgba(28,89,162, 0.9) 25%, #3271b3 25%, #317dc0 50%,#3985c6 50%, rgba(54,146,212, 0.95) 75%, #499bd7 75%, #3ca2e2);
+    .top-button {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      .wap-nav {
+        position: relative;
+        bottom: -1px;
+        height: 2px;
+        width: 10px;
+        margin-right: 5px;
+        background-color: #fff;
+        border-radius: 1px;
+        &::after {
+          content: '';
+          position: absolute;
+          height: 2px;
+          width: 80%;
+          background-color: #fff;
+          top: -4px;
+          left: 0;
+          border-radius: 1px;
+        }
+        &::before {
+          content: '';
+          position: absolute;
+          height: 2px;
+          width: 120%;
+          background-color: #fff;
+          bottom: -4px;
+          left: 0;
+          border-radius: 1px;
+        }
+      }
+      .name {
+        font-size: 14px;
+      }
+      .flex-space {
+        flex: 1;
+      }
+      img {
+        width: 20px;
+        height: 20px;
+      }
+      .avatar {
+
+      }
+      .qr-code {
+        margin-left: 10px;
       }
     }
-    .header-bottom {
+    .middle-balance {
+      padding: 24px 0;
+      .title {
+        font-size: 16px;
+        margin-bottom: 16px;
+      }
+      .balance {
+        font-size: 24px;
+        font-weight: bold;
+      }
+    }
+    .bottom-entrance {
       display: flex;
       padding: 10px 0;
-    }
-    .header-bottom-item {
-      flex: 1;
-      color: #666;
-      font-size: 14px;
-      img {
-        height: 26px;
-        width: auto;
+      .bottom-entrance-item {
+        flex: 1;
+        font-size: 14px;
+        img {
+          height: 24px;
+          width: auto;
+        }
       }
     }
-    .sign {
-      font-size: 14px;
-      font-weight: 400;
+  }
+  .backup {
+    font-size: 12px;
+    padding: 2px 4px;
+    background-color: #e64545;
+    color: #fff;
+    border-radius: 3px;
+  }
+  .wallet-index-fixed {
+    height: calc(100vh - 230px);
+    margin-top: 230px;
+    padding-bottom: 50px;
+    z-index: 0;
+    background-color: #fff;
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+      display: none;
     }
-    .note {
+  }
+  .my-coin {
+    height: calc(100vh - 300px);
+    color: #1d5aa3;
+    a {
+      color: #1d5aa3;
+    }
+    .label {
       font-size: 12px;
-      border: 1px solid #d36800;
-      border-radius: 2px;
-      color: #d36800;
-      padding: 0px 2px;
-      margin-left: 4px;
+      color: #999;
     }
-    .more {
-      font-size: 10px;
-      .van-icon-arrow::before {
-        transition: 0.3s;
-      }
-      
-    }
-    .show-more-balance {
-      .van-icon-arrow::before {
-        transform: rotate(90deg);
+    .top-title {
+      padding: 6px 0;
+      .add-coin {
+        font-size: 20px;
+        float: right;
       }
     }
   }
@@ -85,7 +123,7 @@
     height: 100vh;
     width: 60vw;
     .wallet-list-title {
-      padding: 15px 30px;
+      padding: 15px 18px;
       font-weight: 600;
       font-size: 18px;
       position: absolute;
@@ -102,17 +140,22 @@
     }
     .wallet-list-item {
       display: flex;
-      padding: 6px 30px;
+      padding: 10px 18px;
       align-items: center;
       color: #666;
       .wallet-photo {
         flex: 0;
         height: 30px;
-        margin-right: 10px;
+        margin-right: 5px;
+        vertical-align: middle;
       }
       .wallet-name {
         flex: 1;
         font-size: 14px;
+        .wallet-address {
+          font-size: 12px;
+          color: #999;
+        }
       }
     }
     .action {
@@ -129,123 +172,96 @@
       z-index: 2000;
     }
   }
-  .nodata {
-    height: 100px;
-    display: block;
-    margin: 30px auto 10px;
-  }
-  
 }
 </style>
 <template>
-  <div id="wallet-index" @click="showMoreBalance = false">
-    <van-nav-bar :title="wallet_info.name" left-text="" fixed @click-left="showWalletList = true" @click-right="toWalletInfo">
-      <van-icon name="wap-nav" slot="left" />
-      <van-icon name="contact" slot="right" />
-    </van-nav-bar>
-
-    <scroller class="fixed-container" :on-refresh="refresh" :refreshText="$t('main.refresh')" :noDataText="$t('main.noMoreData')" ref="myscroller">
-
-      <div class="wallet-header">
-        <div class="header-top text-center">
-          <img @click="toReceive" class="header-logo" src="http://lbtc.io/wallet/static/img/logo.png">
-          <div class="header-balance" :class="showMoreBalance ? 'show-more-balance' : ''">
-            <span @click.stop="moreBalance" class="balance">
-              {{ UnSpent ? UnSpent.totalbalance : 0}}
-            </span>
-            <span @click.stop="moreBalance" class="sign">LBTC</span><span class="note" v-if="!wallet_info.ispackup" @click="toWalletInfo">{{$t('wallet.index.backup')}}</span>
-            <span @click.stop="moreBalance" class="more" v-if="UnSpent.unavailablebalance">
-              <van-icon name="arrow" />
-            </span>
-            <div class="more-balance-content" v-if="showMoreBalance">
-              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                  <td>{{$t('wallet.index.availablebalance')}}:</td>
-                  <td><span>{{UnSpent.availablebalance}} </span><span class="sign">LBTC</span></td>
-                </tr>
-                <tr>
-                  <td>{{$t('wallet.index.unavailablebalance')}}:</td>
-                  <td><span>{{UnSpent.unavailablebalance}} </span><span class="sign">LBTC</span></td>
-                </tr>
-              </table>
-            </div>
-            
-          </div>
-        </div>
-        <div class="header-bottom">
-          <div class="header-bottom-item text-center" @click="toSend">
-            <img src="http://lbtc.io/wallet/static/img/wallet-s.png">
-            <div>
-              {{$t('wallet.index.tabName1')}}
-            </div>
-          </div>
-          <div class="header-bottom-item text-center" @click="toReceive">
-            <img src="http://lbtc.io/wallet/static/img/wallet-r.png">
-            <div>
-              {{$t('wallet.index.tabName2')}}
-            </div>
-          </div>
-          <div class="header-bottom-item text-center" @click="toVote">
-            <img src="http://lbtc.io/wallet/static/img/wallet-v.png">
-            <div>
-              {{$t('wallet.index.tabName3')}}
-            </div>
-          </div>
-        </div>
-      </div>
-
+  <div id="wallet-index" v-if="walletDB && walletDB.current">
+    <div class="wallet-header">
       <div class="container">
-        <p>{{$t('mine.txHis.title')}}</p>
-        <div class="text-center f666" v-if="nodata">
-          <img class="nodata" src="http://lbtc.io/wallet/static/img/nodata.png" v-if="nodata">
-          {{$t('mine.txHis.msg1')}}
+        <div class="top-button">
+          <span class="wap-nav" @click="showWalletList = true"></span>
+          <span class="name" @click="showWalletList = true">{{walletDB.accounts[walletDB.current].name}}</span>
+          <span class="flex-space"></span>
+          <img class="avatar" @click="toWalletInfo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACHUlEQVRYR9WX0VEcMRBEuyOADAwRYCIwRACOwL4IfERgiAAcgSECcATmIvA5AhMCF0G7mpKuFrHLSNoPClXt165mnmZmZ1pE55L0EcBO2r4hue4xxdZNkpYAvgHYK/Y+ALgi+aPFZjWApF0AvwH45K8tR+KY5GMNSBVAg/PssxqiFuAawJeaEw2+uSH5NdoTAkhyrv9Fhibe75N0bUyuGgAX3WUnwBnJq7kA9wA+dQL8Inn6lgArkkfvHuAcwPfOFFyQ9P5ZRejG86cT4DBq0eFfYMeSegoxzL9t1wK4F7i75eETBWTjlh31gGqAFAWnwpGIIOz8KAp9PkFVBPLHaSa4sUy15RsAy9pB1BSBYcwTiCOS/3FHZt3iuCsCUeJ73jelYJAKn/zDQJR44DyQXLVCVANI8mg9AfBqbwdw54ek6yFcIYAkO/Q0LCVYZNxR8TQ0UF8nlOSKt/6bs6wTz6YMTEZAUo8KmvJzTXIx9nIUoML5XwAWnVl4WrA6RS7MJogXACnntyNWXOGOigtsVPGm/uCaccGOiZjPZU08A0gGPPmGBWfH5yTdbKqXJP+qrqGDwSYXpifk9gAlQKn/wnkeEUkq9cQznVgCeOJl4gVJh3z2Sj3kZzLkln2YjW4BCvkdqtlWqiISW7k+BHDOfPUKlWyr8/y9JDcld1Nf3Z5qagiQcxVeJmYA5EvOtrbKFOzWCokZEB7jj1kt/QcfytMhQ6pwOgAAAABJRU5ErkJggg==">
+          <img class="qr-code" v-if="isplusReady" @click="toQrCode" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABb0lEQVRYR+1X0U3DMBS8mwCYAJgANgAmgA2ACWCEsgFMQLsBTEC7QbpB2aCZ4NAFG1kRpU6dKnzEUhWlfe/5fD3b7wgAkm4APAC49HsyXkg+tr7r9CrpOdRO8+YAnkjOKcmTfmyoWpM87DRjK1jSGsDBhhpXBmA0FyFgCcAJHn5OSb4VAjC7dwDiQvw8CzUXBhARfpI8KZksN1fSCsCxF2kA+kFDtjWQW7NTXMr6vwAQ6ShWfC4Nkqyra8ebgfOw/Sy4KMDcWjvFhW0/bUS+U4Uek0YAIwPDMyApPZt71HdWqaXPgXgQZWX0HFQZQJXcTj3X31quYcB/gU/DIUY1vAiHWHY658jAyIC3ofv2WwD3pR1wrqBDQ/IKYJb2hO8k3ULvfbRbsrErjsZkRfJ07/x/e9F4AdZta+Yf/PEwsFmpMIPgLPJozey+ogNrrNlf5nRN8qiEla3m1MUDiEm4FVMnW2xWfrHnNQC3ABPb8y9RDLGjNd2FUwAAAABJRU5ErkJggg==">
         </div>
-        <div class="" v-if="!nodata">
-
-          <div class="tx-item" v-for="(item, index) in txsDetails.txsList" v-if="index < 10" @click="toHisInfo(item)">
-            <div class="tx-type">
-              <img :src="'http://lbtc.io/wallet/static/img/wallet-' + item.type + '.png'">
-            </div>
-            <div class="tx-info">
-              <div class="tx-id ellipsis">{{item.hash | formatHash}}</div>
-              <div class="tx-time" style="word-break:keep-all;">{{item.time | formatTime(1)}}</div>
-            </div>
-            <div class="tx-value" :class="item.type == 's' ? 'send' : 're' ">
-              {{item.type == 's' ? '-' : '+'}}{{item.value}} LBTC
-            </div>
+        <div class="middle-balance text-center">
+          <div class="title">
+            {{$t('wallet.index.myAssets')}}(LBTC)
+            <span v-if="!walletDB.accounts[walletDB.current].backupFlag" class="backup" @click="toWalletInfo">{{$t('wallet.index.backup')}}</span>
           </div>
-          <p class="text-center" style="letter-spacing: 0px;" v-if="showMore">
-            {{$t('wallet.index.moreHisContent')}}
-            <a href="#/mine-tx-his">{{$t('wallet.index.moreHisButton')}}</a>
-            ...
-          </p>
-
+          <div class="balance" @click="toSend">{{availableBalance}}</div>
+        </div>
+        <div class="bottom-entrance">
+          <div class="bottom-entrance-item text-center" @click="toSend">
+            <img src="https://lbtc.io/wallet/static/img/main-send-0.png">
+            <div>{{$t('wallet.index.tabSend')}}</div>
+          </div>
+          <div class="bottom-entrance-item text-center" @click="toReceive">
+            <img src="https://lbtc.io/wallet/static/img/main-received-0.png">
+            <div>{{$t('wallet.index.tabReceive')}}</div>
+          </div>
+          <div class="bottom-entrance-item text-center" @click="toVote">
+            <img src="https://lbtc.io/wallet/static/img/main-node-0.png">
+            <div>{{$t('wallet.index.tabNode')}}</div>
+          </div>
         </div>
       </div>
+    </div>
 
-    </scroller>
+    <div class="wallet-index-fixed">
+      <mt-loadmore
+        style="overflow: visible;"
+        :top-method="refresh"
+        :auto-fill="false"
+        :topPullText="$t('main.refresh')"
+        :topDropText="$t('main.refresh')"
+        :topLoadingText="$t('main.loading')"
+        ref="loadmore">
+        <div class="my-coin container">
+          <div class="top-title">
+            <span>{{$t('wallet.index.assets')}}</span>
+          </div>
+          <div class="cell-group">
+            <router-link :to="{path: '/wallet-coin-history', query: { coin: 'LBTC'}}">
+              <div class="cell-item underline">
+                <img class="cell-logo" src="https://lbtc.io/wallet/static/img/coin-lbtc.png">
+                <div class="cell-content">
+                  <div class="title">LBTC</div>
+                  <div class="label">Lightning Bitcoin</div>
+                </div>
+                <div class="cell-function">{{availableBalance}}</div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </mt-loadmore>
+    </div>
 
+    <!-- Wallet List -->
     <van-popup v-model="showWalletList" position="left">
       <div class="wallet-list-title">{{$t('wallet.index.walletListTitle')}}</div>
       <div class="container">
-        <div class="wallet-list-item" :class="key == current_wallet ? 'action' : ''" v-for="(value, key, index) in wallet_list" :key="key" @click="selectWallet(key)">
-          <img class="wallet-photo" :src="'http://lbtc.io/wallet/static/img/photo/0/' + value.photo + '.png'">
-          <div class="wallet-name ellipsis">{{value.name}}</div>
+        <div class="wallet-list-item" :class="item == walletDB.current ? 'action' : ''" v-for="(item, index) in walletDB.addresses" :key="item" @click="selectWallet(item)">
+          <img class="wallet-photo" :src="'https://lbtc.io/wallet/static/img/photo/0/' + walletDB.accounts[item].avatar + '.png'">
+          <div class="wallet-name ellipsis">
+            <div>{{walletDB.accounts[item].name}}</div>
+            <div class="wallet-address hash">{{walletDB.accounts[item].address | formatHash}}</div>
+          </div>
         </div>
       </div>
 
       <div class="bottom-button">
         <div class="wallet-list-item" @click="toImport">
-          <img class="wallet-photo" :src="'http://lbtc.io/wallet/static/img/mine-wallet-man.png'">
+          <img class="wallet-photo" style="height: 24px;" :src="'https://lbtc.io/wallet/static/img/wallet-index-inport.png'">
           <div class="wallet-name ellipsis">{{$t('create.index.importWallet')}}</div>
         </div>
         <div class="wallet-list-item" @click="toCreate">
-          <img class="wallet-photo" :src="'http://lbtc.io/wallet/static/img/mine-wallet-man.png'">
+          <img class="wallet-photo" style="height: 24px;" :src="'https://lbtc.io/wallet/static/img/wallet-index-create.png'">
           <div class="wallet-name ellipsis">{{$t('create.index.createWallet')}}</div>
         </div>
       </div>
     </van-popup>
-
   </div>
 </template>
 
@@ -256,325 +272,68 @@ export default {
   props: {},
   data() {
     return {
-      isLoading: false,
       showWalletList: false,
-      wallet_list: {},
-      current_wallet: "",
-      wallet_info: {},
-      txsDetails: {},
-      UnSpent: {},
-      moreStatus: false,
-      balance: 0,
-      showMoreBalance: false,
-      nodata: false,
-      showMore: false,
-      walletPopup: false,
-    }
+      availableBalance: 0
+    };
   },
-  computed: {
-    save_wallet_list() {
-      return this.$store.state.home.save_wallet_list;
-    },
-    save_current_wallet() {
-      return this.$store.state.home.save_current_wallet;
-    },
-    save_wallet_info() {
-      return this.$store.state.home.save_wallet_info;
-    },
-    save_txsDetails() {
-      return this.$store.state.home.save_txsDetails;
-    },
-    save_UnSpent() {
-      return this.$store.state.home.save_UnSpent;
-    },
-    save_moreStatus() {
-      return this.$store.state.home.save_moreStatus;
-    },
-    save_nodata() {
-      return this.$store.state.home.save_nodata;
-    },
-    isFreshInHome() {
-      return this.$store.state.isFreshInHome
-    }
-  },
-  created() {
-    this.walletIndexInit();
-  },
+  computed: {},
+  created() {},
   mounted() {
-    if (this.isFreshInHome) {
-      window.setTimeout( () => {
-        this.$refs.myscroller.triggerPullToRefresh();
-        this.$store.commit('isFreshInHome', {
-          isFreshInHome: false,
-        });
-      }, 500);
-    }
+    this.walletIndexInit();
   },
   methods: {
     walletIndexInit() {
-      
-      if (this.save_current_wallet && JSON.stringify(this.save_UnSpent) != '{}') {
-
-        this.wallet_list = this.save_wallet_list;
-        this.current_wallet = this.save_current_wallet;
-        this.wallet_info = this.save_wallet_info;
-        this.txsDetails = this.save_txsDetails;
-        this.UnSpent = this.save_UnSpent;
-        this.showMore = this.save_moreStatus;
-        this.nodata = this.save_nodata;
-
-      }
-      
-      Promise.all([this.localforage.getItem("wallet_list"), this.localforage.getItem("current_wallet")]).then( data => {
-        
-        if (data[0]) {
-          this.wallet_list = data[0];
-          this.current_wallet = data[1];
-          this.wallet_info = data[0][data[1]];
-
-          return Promise.resolve(this.wallet_info)
-        } else {
-          this.$router.push({ path: "/create-index" });
-          return false
-        }
-      }).then( info => {
-        Promise.all([this.localforage.getItem(info.addr + '+txsDetails'), this.localforage.getItem(info.addr + '+unspent')]).then( obj => {
-          
-          if (obj[0] && obj[1]) {
-            if (obj[0].txsList.length) {
-              this.nodata = false;
-              this.txsDetails = obj[0];
-              this.UnSpent = obj[1];
-              if (obj[0].txsList.length > 10) {
-                this.showMore = true;
-              } else {
-                this.showMore = false;
-              }
-            } else {
-              this.nodata = true;
-              this.showMore = false;
-              this.txsDetails = {
-                current_height : 1,
-                txsList : []
-              };
-              this.UnSpent = obj[1];
-            }
-            this.$store.commit('saveHomeState', {
-              save_wallet_list: this.wallet_list,
-              save_current_wallet: this.current_wallet,
-              save_wallet_info: this.wallet_info,
-              save_txsDetails: this.txsDetails,
-              save_UnSpent: this.UnSpent,
-              save_moreStatus: this.showMore,
-              save_nodata: this.nodata
-            });
-          } else {
-            this.txsDetails = {
-              current_height: 0,
-              txsList: []
-            };
-            this.UnSpent = {
-              available: [],
-              availablebalance: 0,
-              unavailable: [],
-              unavailablebalance: 0
-            };
-            this.nodata = true;
-            this.moreStatus = false;
-          }
-        })
-      })
-    },
-
-    refresh(done) {
-      setTimeout(() => {
-        this.getTxByAdd(this.current_wallet, done);
-      }, 500);
-    },
-
-    getTxByAdd(addr, done) {
-      this.$http.get(this.$api.api.getHeight, { addr: addr }).then(res => {
-        if (res.error) {
-          return Promise.reject(res.msg);
-        } else {
-          return Promise.resolve(res.msg);
-        }
-      })
-      .then(height => {
-        let total_height = height;
-        let current_height = this.txsDetails.current_height;
-        let tx_list = [];
-        this.$http.get(this.$api.api.getTxByAddr, {
-          addr: addr,
-          start: current_height,
-          end: total_height
-        })
-        .then(result => {
-          if (result.error) {
-            window.setTimeout(() => {
-              Toast.fail({
-                duration: 1500,
-                message: result.msg
-              });
-              return false;
-            }, 1000);
-          } else {
-            tx_list = result.msg;
-          }
-          this.getTxsDetails(tx_list, total_height, addr, done);
-        });
-      })
-      .catch(err => {
-        Toast({
-          duration: 1500,
-          message: err
-        })
-      });
-    },
-
-    getTxsDetails(tx_list, total_height, current_wallet, done) {
-      let newUnSpent = {};
-
-      if (tx_list.length) {
-        let txGroup = this.chunkArry(tx_list, 50);
-
-        this.Wallet.queue(txGroup, current_wallet).then( txsList => {
-          return Promise.resolve(txsList)
-        }).then( txsList => {
-          newUnSpent = this.Wallet.addListUnSpent(txsList, current_wallet, total_height, this.UnSpent);
-          this.txsDetails.current_height = total_height;
-          this.txsDetails.txsList = txsList.concat(this.txsDetails.txsList);
-          if (this.txsDetails.txsList.length) {
-            this.nodata = false;
-            if (this.txsDetails.txsList.length > 10) {
-              this.showMore = true;
-            } else {
-              this.showMore = false;
-            }
-          }
-          this.UnSpent = newUnSpent;
-          return Promise.resolve(
-            Promise.all([
-              this.localforage.setItem(current_wallet + "+unspent", this.UnSpent),
-              this.localforage.setItem(current_wallet + "+txsDetails", this.txsDetails)
-            ]).then( res => {
-              return Promise.resolve(res)
-            })
-          )
-        }).then(res => {
-          Toast({
-            duration: 1500,
-            message: this.$t('mine.txHis.msg2')
-          });
-          this.$store.commit('saveHomeState', {
-            save_wallet_list: this.wallet_list,
-            save_current_wallet: this.current_wallet,
-            save_wallet_info: this.wallet_info,
-            save_txsDetails: this.txsDetails,
-            save_UnSpent: this.UnSpent,
-            save_moreStatus: this.showMore
-          });
-          done()
-          return true;
-        })
-
-      } else {
-        this.txsDetails.current_height = total_height;
-        Promise.all([
-          this.localforage.setItem(current_wallet + "+txsDetails", this.txsDetails)
-        ]).then( res => {
-          Toast({
-            duration: 1500,
-            message: this.$t('mine.txHis.msg3')
-          })
-          done()
-          return true;
-        })
-      }
-
-    },
-       
-    selectWallet(param) {
-      if (param != this.current_wallet) {
-        this.showWalletList = false;
-        this.current_wallet = param;
-
-        window.setTimeout( ()=> {
-          this.localforage.setItem("current_wallet", param).then( res => {
-            if (res) {
-
-              Promise.all([this.localforage.getItem("wallet_list"), this.localforage.getItem("current_wallet")]).then( data => {
-                if (data[0]) {
-                  this.wallet_list = data[0];
-                  this.current_wallet = data[1];
-                  this.wallet_info = data[0][data[1]];
-
-                  return Promise.resolve(this.wallet_info)
-                } else {
-                  this.$router.push({ path: "/create-index" });
-                  return false
-                }
-              }).then( info => {
-                Promise.all([this.localforage.getItem(info.addr + '+txsDetails'), this.localforage.getItem(info.addr + '+unspent')]).then( obj => {
-                  if (obj[0] && obj[1]) {
-                    if (obj[0].txsList.length) {
-                      this.nodata = false;
-                      this.txsDetails = obj[0];
-                      this.UnSpent = obj[1];
-                      
-                      if (obj[0].txsList.length > 10) {
-                        this.showMore = true;
-                      } else {
-                        this.showMore = false;
-                      }
-                    } else {
-                      this.nodata = true;
-                      this.txsDetails = {
-                        current_height : 1,
-                        txsList : []
-                      };
-                      this.UnSpent = obj[1];
-                    }
-
-                    this.$store.commit('saveHomeState', {
-                      save_wallet_list: this.wallet_list,
-                      save_current_wallet: this.current_wallet,
-                      save_wallet_info: this.wallet_info,
-                      save_txsDetails: this.txsDetails,
-                      save_UnSpent: this.UnSpent,
-                      save_moreStatus: this.showMore,
-                      save_nodata: this.nodata
-                    });
-
-                  } else {
-                    this.txsDetails = {
-                      current_height: 0,
-                      txsList: []
-                    };
-                    this.UnSpent = {
-                      available: [],
-                      availablebalance: 0,
-                      unavailable: [],
-                      unavailablebalance: 0
-                    };
-                    this.$store.commit('saveHomeState', {
-                      save_wallet_list: this.wallet_list,
-                      save_current_wallet: this.current_wallet,
-                      save_wallet_info: this.wallet_info,
-                      save_txsDetails: this.txsDetails,
-                      save_UnSpent: this.UnSpent,
-                      save_moreStatus: false,
-                      save_nodata: true
-                    });
-                  }
-                })
-              })
-            }
-          });
+      if (this.$store.state.isFreshWallet) {
+        this.$store.commit('isFreshWallet', false);
+        window.setTimeout(() => {
+          this.refresh();
         }, 500)
+      }
+    },
 
-        this.$refs.myscroller.triggerPullToRefresh();
+    refresh() {
+      if (this.walletDB.updataStatus) {
+        // await this.$store.dispatch('checkSync',this.walletDB.current)
+        this.$store.commit('setUpdataStatus', false);
+        this.$store.dispatch('getWalletTxs', {
+          address: this.walletDB.current
+        }).then( data=> {
+          this.lbtcWalletDB.insertHistroy(this.walletDB.current, data);
+          this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then(r => {
+            if (data.currentHistory.length) {
+              Toast({
+                duration: 2000,
+                message: this.$t('mine.txHis.msg2')
+              });
+            } else {
+              Toast({
+                duration: 2000,
+                message: this.$t('mine.txHis.msg3')
+              });
+            }
+            this.$store.commit('setUpdataStatus', true);
+            this.$refs.loadmore.onTopLoaded();
+          })
+        }).catch((error) => {
+          Toast({
+            duration: 2000,
+            message: error
+          });
+          this.$store.commit('setUpdataStatus', true);
+          this.$refs.loadmore.onTopLoaded();
+        })
+      } else {
+        this.$refs.loadmore.onTopLoaded();
+      }
+    },
 
+    selectWallet(param) {
+      if (param != this.walletDB.current && this.walletDB.updataStatus) {
+        this.lbtcWalletDB.selectWallet(param);
+        this.showWalletList = false;
+        this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then( r => {
+          this.refresh();
+        });
       }
     },
 
@@ -590,6 +349,18 @@ export default {
       this.$router.push({ path: "/vote-index" });
     },
 
+    toGovernance() {
+      this.$router.push({ path: "/governance-index" });
+    },
+
+    toRegister() {
+      this.$router.push({ path: "/register-index" });
+    },
+
+    toToken() {
+      this.$router.push({ path: "/token-index" });
+    },
+
     toCreate() {
       this.$router.push({ path: "/create-create" });
     },
@@ -599,34 +370,34 @@ export default {
     },
 
     toHisInfo(param) {
-      this.$router.push({ path:'/mine-tx-hisInfo', query: { txInfo: JSON.stringify(param)} });
+      this.$router.push({
+        path: "/mine-tx-hisInfo",
+        query: { txInfo: JSON.stringify(param) }
+      });
     },
 
     toWalletInfo() {
-      this.$router.push({ path:'/mine-manageInfo', query: { addr: this.current_wallet } });
+      this.$router.push({
+        path: "/mine-manageInfo",
+        query: { addr: this.lbtcWalletDB.current }
+      });
     },
 
-    showMSG() {
-        if (this.txsDetails.txsList && (this.txsDetails.txsList.length > 10)) {
-          return true
-        } else {
-          return false
-        }
+    toAddCoin() {
+      this.$router.push({ path: "/wallet-add" });
     },
 
-    moreBalance() {
-      if (this.UnSpent.unavailablebalance) {
-        this.showMoreBalance = !this.showMoreBalance;
-      } else {
-        return false
-      }
-    }
-
+    toQrCode() {
+      this.$router.push({ path: "/qr" });
+    },
   },
-  destroyed() {},
   watch: {
-    '$route': function (to, from) {
-
+    walletDB: {
+      handler(newVal, oldVal) {
+        this.availableBalance = newVal.accounts[newVal.current].availableBalance;
+      },
+      deep: true,
+      immediate: true
     }
   }
 };

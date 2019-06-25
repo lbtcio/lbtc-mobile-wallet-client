@@ -1,8 +1,8 @@
 <style lang="scss" scoped>
 #create-index {
   .container {
-    height: 100vh;
     text-align: center;
+    position: inherit;
     .logo {
       margin-top: 15vh;
       width: 180px;
@@ -13,6 +13,11 @@
       color: #1d5aa3;
       a {
         color: #1d5aa3;
+      }
+      .net {
+        float: left;
+        color: #666;
+        letter-spacing: 0;
       }
     }
     .title {
@@ -32,22 +37,23 @@
   <div id="create-index" v-if="showCreate">
     <div class="container">
       <p class="changeLang">
+        <span class="net">{{wConfig.network == 'bitcoin' ? 'Mainnet' : 'Testnet'}}</span>
         <a @click="changeLang('zh')">中文</a>
         |
         <a @click="changeLang('en')">EN</a>
       </p>
-      <img class="logo" src="http://lbtc.io/wallet/static/img/logo.png" alt="">
+      <img class="logo" src="https://lbtc.io/wallet/static/img/logo.png" alt>
       <p class="title">Make Transfers Fast as Lightning</p>
       <div class="input-group">
-        <button class="yellow" @click="toCreateCreate">{{$t("create.index.createWallet")}}</button>
-        <button class="default" @click="toInportIndex">{{$t("create.index.importWallet")}}</button>
+        <button class="yellow" @click="toInportIndex">{{$t("create.index.importWallet")}}</button>
+        <button class="default" @click="toCreateCreate">{{$t("create.index.createWallet")}}</button>
       </div>
-
     </div>
   </div>
 </template>
 
 <script>
+import { Toast } from "vant";
 export default {
   components: {},
   props: {},
@@ -57,35 +63,57 @@ export default {
     };
   },
   computed: {},
-  created() {
-    
+  created() {},
+  mounted() {
+    setTimeout(() => {
+      this.localforage.getItem("wallet_list").then(l => {
+        if (l) {
+          Toast.loading({
+            duration: 0,
+            message: this.$t("commom.tx.merginWallet")
+          });
+          Object.keys(l).map(key => {
+            this.lbtcWalletDB.insertaccount(
+              key,
+              l[key].photo,
+              l[key].name,
+              l[key].psw,
+              l[key].mnemonic,
+              l[key].prv,
+              l[key].network,
+              l[key].ispackup,
+              1
+            );
+            this.localforage.removeItem('news_lbtcnews')
+            this.localforage.removeItem(key + "+confirmingTx");
+            this.localforage.removeItem(key + "+ownToken");
+            this.localforage.removeItem(key + "+txsDetails");
+            this.localforage.removeItem(key + "+unspent");
+          });
+
+          this.$store.dispatch("saveWalletDB", this.lbtcWalletDB).then(r => {
+            Toast.clear();
+            localStorage.setItem("isMerge", true);
+            this.$router.push({ path: "/main-index/wallet" });
+          });
+        }
+      });
+    }, 200)
   },
-  mounted() {},
   methods: {
     toCreateCreate() {
-      this.$router.push({ path: '/create-create'});
+      this.$router.push({ path: "/create-create" });
     },
     toInportIndex() {
-      this.$router.push({ path: '/import-index'});
-    },
-    changeBg() {
-      if (this.$store.state.isplusReady) {
-        plus.navigator.setStatusBarBackground("#FFFFFF");
-      }
+      this.$router.push({ path: "/import-index" });
     },
     changeLang(e) {
       let locale = this.$i18n.locale;
       if (locale != e) {
         this.$i18n.locale = e;
-        localStorage.setItem('locale', e);
+        localStorage.setItem("locale", e);
       }
     }
-  },
-  destroyed() {
-    if (this.$store.state.isplusReady) {
-      plus.navigator.setStatusBarBackground("#f6b330");
-    }
-  },
-  watch: {}
+  }
 };
 </script>

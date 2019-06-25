@@ -8,6 +8,8 @@
     height: 100%;
   }
   .term-content {
+    height: 100vh;
+    overflow-y: auto;
     p {
       font-size: 12px;
       letter-spacing: .5px;
@@ -17,11 +19,11 @@
 </style>
 <template>
   <div id="import-index">
-    <van-nav-bar
+    <van-nav-bar :z-index="1000" 
       :title="$t('import.navTitle')"
       left-arrow 
       fixed 
-      @click-left="onClickLeft"
+      @click-left="$router.goBack()"
     />
 
     <div class="container fixed-container">
@@ -105,7 +107,7 @@
     </div>
 
     <van-popup v-model="openTerms" position="right">
-      <van-nav-bar
+      <van-nav-bar :z-index="1000" 
         :title="$t('create.create.termTitle')"
         left-arrow
         fixed 
@@ -120,7 +122,6 @@
 
 <script>
 import { Toast } from "vant";
-import wConfig from "../../factory/wallet/config.js"
 
 export default {
   components: {},
@@ -203,7 +204,7 @@ export default {
   mounted() {},
   methods: {
     inportInit() {
-      this.termContent = wConfig.terms;
+      this.termContent = this.wConfig.terms;
       this.localforage.getItem("wallet_list").then(res => {
         if (res) {
           this.wallet_list = res;
@@ -211,10 +212,6 @@ export default {
           this.wallet_list = {};
         }
       });
-    },
-
-    onClickLeft() {
-      this.$router.back();
     },
 
     tabsOnClick(index, title) {},
@@ -265,9 +262,7 @@ export default {
     },
 
     checkWalletListLen() {
-      let arr = Object.keys(this.wallet_list);
-
-      if (arr.length > 4) {
+      if (this.walletDB.addresses.length > 4) {
         Toast.fail({
           duration: 1500,
           message: this.$t('create.create.sumMsg')
@@ -300,31 +295,18 @@ export default {
           });
           return false;
         }
+
         Toast.loading({
           duration: 0,
           mask: true,
           message: this.$t('import.msg2')
         });
+
         window.setTimeout(() => {
-          this.Wallet.createWalletFromMnemonic(this.mnem.mnem.value)
-            .then(walletInfo => {
-              walletInfo.name = this.mnem.name.value;
-              walletInfo.psw = this.mnem.password.value;
-              walletInfo.ispackup = true;
 
-              this.wallet_info = walletInfo;
-              this.wallet_list[walletInfo.addr] = walletInfo;
+          let walletInfo = this.Wallet.createWalletFromMnemonic(this.mnem.mnem.value);
+          this.syncData(walletInfo, this.mnem.name.value, this.mnem.password.value);
 
-              Toast.loading({
-                duration: 0,
-                mask: true,
-                message: this.$t('import.msg3')
-              });
-
-              this.getTxByAdd(walletInfo.addr);
-
-            })
-            .catch(err => {});
         }, 200);
       }
     },
@@ -344,170 +326,63 @@ export default {
         this.prv.repass.status &&
         this.prv.checked.status
       ) {
+        let net = this.wConfig.network;
+        try {
+          this.bitcoin.ECPair.fromWIF(this.prv.prv.value, this.bitcoin.networks[net]);
+        } catch (error) {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('import.msg4')
+          });
+          return false;
+        }
+
         Toast.loading({
           duration: 0,
           mask: true,
           message: this.$t('import.msg2')
         });
+
         window.setTimeout(() => {
-          this.Wallet.createWalletFromPrv(this.prv.prv.value)
-            .then(walletInfo => {
-              walletInfo.name = this.prv.name.value;
-              walletInfo.psw = this.prv.password.value;
-              walletInfo.ispackup = true;
 
-              this.wallet_info = walletInfo;
-              this.wallet_list[walletInfo.addr] = walletInfo;
+          let walletInfo = this.Wallet.createWalletFromPrv(this.prv.prv.value);
+          this.syncData(walletInfo, this.prv.name.value, this.prv.password.value);
 
-              Toast.loading({
-                duration: 0,
-                mask: true,
-                message: this.$t('import.msg3')
-              });
-
-              this.getTxByAdd(walletInfo.addr);
-
-            })
-            .catch(err => {
-              Toast.fail({
-                duration: 1500,
-                message: this.$t('import.msg4')
-              });
-              return false;
-            });
         }, 200);
       }
     },
 
-    getTxByAdd(addr) {
-      this.$http
-        .get(this.$api.api.getHeight, { addr: addr })
-        .then(res => {
-          if (res.error) {
-            return Promise.reject(res.msg);
-          } else {
-            return Promise.resolve(res.msg);
-          }
-        })
-        .then(height => {
-          let total_height = height;
-          let current_height = 1;
+    syncData(walletInfo, name, password) {
+      this.$store.commit('setUpdataStatus', false);
+      Toast.loading({
+        duration: 0,
+        mask: true,
+        message: this.$t('import.msg3')
+      });
 
-          let tx_list = [];
-          this.$http.get(this.$api.api.getTxByAddr, {
-            addr: addr,
-            start: current_height,
-            end: total_height
-          })
-          .then(result => {
-            if (result.error) {
-              window.setTimeout(() => {
-                Toast.fail({
-                  duration: 1500,
-                  message: result.msg
-                });
-                return false;
-              }, 1000);
-            } else {
-              tx_list = result.msg;
-            }
-            this.getTxsDetails(tx_list, total_height, addr);
-          });
-        })
-        .catch(err => {
-          Toast({
-            duration: 1500,
-            message: err
-          })
-        });
-    },
-
-    getTxsDetails(tx_list, total_height, current_wallet) {
-      let txsDetails = {};
-      let proList = [];
-      let txsList = [];
-      let UnSpent = {};
-
-      if (tx_list.length) {
-
-        let txGroup = this.chunkArry(tx_list, 100);
-
-        this.Wallet.queue(txGroup, current_wallet).then( txsList => {
-          return Promise.resolve(txsList)
-        }).then( txsList => {
-          UnSpent = this.Wallet.listUnSpent(txsList, current_wallet, total_height);
-
-          txsDetails.current_height = total_height;
-          txsDetails.txsList = txsList;
-
-          let moreStatus = false;
-          if (txsList.length > 10) {
-            moreStatus = true;
-          }
-
-          this.$store.commit('saveHomeState', {
-            save_wallet_list: this.wallet_list,
-            save_current_wallet: this.wallet_info.addr,
-            save_wallet_info: this.wallet_info,
-            save_txsDetails: txsDetails,
-            save_UnSpent: UnSpent,
-            save_moreStatus: moreStatus,
-            save_nodata: false
-          });
-
-          return Promise.resolve(
-            Promise.all([
-              this.localforage.setItem(current_wallet + "+unspent", UnSpent),
-              this.localforage.setItem(current_wallet + "+txsDetails", txsDetails),
-              this.localforage.setItem("wallet_list", this.wallet_list),
-              this.localforage.setItem("current_mnem", this.wallet_info.mnemonic),
-              this.localforage.setItem("current_wallet", this.wallet_info.addr)
-            ]).then( res => {
-              return Promise.resolve(res)
-            })
-          )
-        }).then(res => {
+      this.$store.dispatch('getWalletTxs', {
+        address: walletInfo.address,
+        currentHeight: 1
+      }).then( data => {
+        this.lbtcWalletDB.insertaccount(
+          walletInfo.address,
+          walletInfo.avatar,
+          name,
+          password,
+          walletInfo.mnemonicWord,
+          walletInfo.privateKey,
+          walletInfo.network,
+          true,
+          2
+        );
+        this.lbtcWalletDB.insertHistroy(walletInfo.address, data);
+        this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then(r => {
           Toast.clear();
-          this.$router.push({ path: "/main-index" });
-          return true;
+          this.$store.commit('setUpdataStatus', true);
+          this.$router.push({ path: "/main-index/wallet" });
         })
-
-      } else {
-        txsDetails.current_height = 0;
-        txsDetails.txsList = [];
-        UnSpent.available = [];
-        UnSpent.unavailable = [];
-        UnSpent.availablebalance = 0;
-        UnSpent.unavailablebalance = 0;
-        UnSpent.totalbalance = 0;
-
-        this.$store.commit('saveHomeState', {
-          save_wallet_list: this.wallet_list,
-          save_current_wallet: this.wallet_info.addr,
-          save_wallet_info: this.wallet_info,
-          save_txsDetails: txsDetails,
-          save_UnSpent: UnSpent,
-          save_moreStatus: false,
-          save_nodata: true
-        });
-
-        Promise.all([
-          this.localforage.setItem(current_wallet + "+unspent", UnSpent),
-          this.localforage.setItem(current_wallet + "+txsDetails", txsDetails),
-          this.localforage.setItem("wallet_list", this.wallet_list),
-          this.localforage.setItem("current_mnem", this.wallet_info.mnemonic),
-          this.localforage.setItem("current_wallet", this.wallet_info.addr)
-        ]).then( res => {
-          Toast.clear();
-          this.$router.push({ path: "/main-index" });
-          return true;
-        })
-
-      }
+      })
     }
-
-  },
-  destroyed() {},
-  watch: {}
+  }
 };
 </script>

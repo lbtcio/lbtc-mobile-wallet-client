@@ -10,38 +10,42 @@ import en from './factory/lang/en';
 
 // UI
 import Vant from 'vant';
-import 'vant/lib/vant-css/index.css';
+import 'vant/lib/index.css';
+import MintUI from 'mint-ui';
+import 'mint-ui/lib/style.css'
 
 // Plugin
 import lib from './factory/libs';
-import wallet from './factory/wallet'
+import wallet from './factory/wallet';
+import WalletDB from './factory/wallet/account'
 
-import localforage from 'localforage';
-import moment from "moment"
-import { Lazyload } from 'vant';
 import VueClipboard from 'vue-clipboard2';
 import VueScroller from 'vue-scroller';
+import localforage from 'localforage';
+import VueSwiper from 'vue-awesome-swiper'
+import 'swiper/dist/css/swiper.css'
 
-
-import Swiper from 'swiper'; 
-import 'swiper/dist/css/swiper.min.css';
-
+// CSS
 import '../static/theme/common.css';
+import '../static/theme/transition.css';
 
-// import VConsole from 'vconsole/dist/vconsole.min.js'
-// let vConsole = new VConsole()
+// Components
+import txcomponent from './components/tx-component.vue';
 
-Vue.use(VueI18n);
-Vue.use(Vant);
-Vue.use(Lazyload);
-Vue.use(VueClipboard);
-Vue.use(VueScroller)
+Vue.component('tx-component', txcomponent);
+
+Vue
+    .use(VueI18n)
+    .use(Vant)
+    .use(MintUI)
+    .use(VueSwiper)
+    .use(VueClipboard)
+    .use(VueScroller);
+
 Vue.config.productionTip = false;
 
-Vue.prototype.localforage = localforage;
-
 let locale = localStorage.getItem('locale') ? localStorage.getItem('locale') : 'zh';
-
+localStorage.setItem('locale', locale);
 const i18n = new VueI18n({
     locale: locale,
     messages: {
@@ -50,6 +54,17 @@ const i18n = new VueI18n({
     },
 });
 
+Vue.mixin({
+    computed: {
+        'isplusReady'() {
+            return store.state.isplusReady;
+        },
+        'walletDB' () {
+            return store.state.walletDB
+        }
+    }
+})
+
 const app = new Vue({
     el: '#app',
     router,
@@ -57,34 +72,46 @@ const app = new Vue({
     i18n,
     lib,
     wallet,
+    async created() {
+        await this.initWalletDB();
+    },
+    methods: {
+        initWalletDB() {
+            return new Promise((resolve) => {
+                localforage.getItem("walletDB").then( r => {
+                    let walletDB;
+                    if (r) {
+                        walletDB = new WalletDB(r.current, r.addresses, r.accounts);
+                    } else {
+                        walletDB = new WalletDB('', [], {});
+                    }
+                    Vue.prototype.lbtcWalletDB = walletDB;
+                    store.state.walletDB.current = walletDB.current;
+                    store.state.walletDB.addresses = walletDB.addresses;
+                    store.state.walletDB.accounts = walletDB.accounts;
+                    store.state.walletDB.updataStatus = true;
+                    resolve(true)
+                })
+            })
+        }
+    },
     render: h => h(App)
 });
 
-
-Vue.mixin({
-    computed: {
-        plusReady() {
-            return store.state.isplusReady;
-        }
-    }
-})
-
-
 document.addEventListener('plusready', function () {
     store.state.isplusReady = true;
-
+    plus.screen.lockOrientation('portrait-primary');
     let now = false;
     let time = null;
     plus.key.addEventListener('backbutton', function () {
-        
-        if (app.$route.path == '/' || app.$route.path == '/main-index' || app.$route.path == '/create-index') {
+        if (app.$route.path.indexOf('/main-index') >= 0) {
             time = null;
             if (now) {
                 now = false;
                 plus.runtime.quit();
             } else {
                 now = true;
-                plus.nativeUI.toast("再按一次退出", { duration: 'short' });
+                plus.nativeUI.toast(app.$t('commom.quit'), { duration: 'short' });
                 time = setTimeout(() => {
                     now = false;
                 }, 1000);
@@ -92,33 +119,14 @@ document.addEventListener('plusready', function () {
         } else {
             router.back();
         }
-
     })
 })
 
-
-Vue.filter('formatHash', function (value) {
-    let subStr1 = value.slice(0,6);
-    let subStr2 = value.slice(-6);
-    let subStr = subStr1 + "..." + subStr2 ;
-    return subStr;
-})
-
-Vue.filter('formatTime', function (value, type) {
-    if (String(value).length == 10) {
-        switch (type) {
-            case 1: 
-                return moment(value*1000).format("YYYY/MM/DD");
-            case 2: 
-                return moment(value*1000).format("YYYY/MM/DD HH:mm:ss");
-        }
-    } else if (String(value).length == 13) {
-        switch (type) {
-            case 1: 
-                return moment(value).format("YYYY/MM/DD");
-            case 2: 
-                return moment(value).format("YYYY/MM/DD HH:mm:ss");
-        }
-    }
-})
-
+let ifGuide = localStorage.getItem('guide');
+let toURL = '';
+if (ifGuide) {
+  toURL = '/';
+} else {
+  toURL = '/guide';
+}
+router.push({ path: toURL });

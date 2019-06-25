@@ -54,6 +54,7 @@
     position: relative;
     input {
       border: none;
+      color: #999;
     }
     &::after {
       content: '';
@@ -81,7 +82,7 @@
     width: 100vw;
     height: 100vh;
   }
-  .show-mnemonic {
+  .dialog-content-box {
     background-color: rgba(29, 90, 163, 0.11);
     padding: 20px 15px;
     letter-spacing: 0;
@@ -103,38 +104,38 @@
 }
 </style>
 <template>
-  <div id="mine-manageInfo" @click="showMoreBalance = false">
+  <div id="mine-manageInfo" @click="showMoreBalance = false" v-if="walletDB.accounts[addr]">
 
-    <van-nav-bar
-      :title="info.name"
+    <van-nav-bar :z-index="1000" 
+      :title="walletDB.accounts[addr].name"
       left-text=""
       fixed 
       :right-text="$t('mine.manageInfo.navRight')"
       left-arrow
-      @click-left="onClickLeft"
+      @click-left="$router.goBack()"
       @click-right="onClickRight"
     />
 
     <div class="container fixed-container">
 
       <div class="manage-header">
-        <img class="info-photo" :src="'http://lbtc.io/wallet/static/img/photo/1/' + info.photo + '.png'">
+        <img class="info-photo" :src="'https://lbtc.io/wallet/static/img/photo/1/' + walletDB.accounts[addr].avatar + '.png'">
         <div class="info-balance" :class="showMoreBalance ? 'show-more-balance' : ''">
           <span @click.stop="moreBalance">
-           {{UnSpent ? UnSpent.totalbalance : 0}} LBTC
+           {{decimal(walletDB.accounts[addr].availableBalance).plus(walletDB.accounts[addr].unavailableBalance).toNumber()}} LBTC
           </span>
-          <span @click.stop="moreBalance" class="more" v-if="UnSpent.unavailablebalance">
+          <span @click.stop="moreBalance" class="more" v-if="walletDB.accounts[addr].unavailableBalance">
             <van-icon name="arrow" />
           </span>
           <div class="more-balance-content" v-if="showMoreBalance">
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td>{{$t('mine.manageInfo.availablebalance')}}:</td>
-                <td><span>{{UnSpent.availablebalance}} </span><span class="sign">LBTC</span></td>
+                <td><span>{{walletDB.accounts[addr].availableBalance}} </span><span class="sign">LBTC</span></td>
               </tr>
               <tr>
                 <td>{{$t('mine.manageInfo.unavailablebalance')}}:</td>
-                <td><span>{{UnSpent.unavailablebalance}} </span><span class="sign">LBTC</span></td>
+                <td><span>{{walletDB.accounts[addr].unavailableBalance}} </span><span class="sign">LBTC</span></td>
               </tr>
             </table>
           </div>
@@ -154,14 +155,15 @@
         <van-cell-group>
           <van-cell :title="$t('mine.manageInfo.changePass')" is-link @click="openChangePsw = true"/>
           <van-cell :title="$t('mine.manageInfo.exportPrv')" is-link @click="itemClick('prv')"/>
+          <van-cell :title="$t('mine.manageInfo.resync')" @click="resyncData(addr)"/>
         </van-cell-group>
       </div>
       
     </div>
 
     <div class="bottom-botton input-group" v-if="showButton">
-      <button class="default" v-if="info.mnemonic" @click="itemClick('mnemonic')">{{$t('mine.manageInfo.packupMnem')}}</button>
-      <button class="warn" :class="info.mnemonic? '' : 'mt62'" @click="itemClick('delete')">{{$t('mine.manageInfo.deleWallet')}}</button>
+      <button class="default" v-if="walletDB.accounts[addr].mnemonicWord" @click="itemClick('mnemonic')">{{$t('mine.manageInfo.packupMnem')}}</button>
+      <button class="warn" :class="walletDB.accounts[addr].mnemonicWord ? '' : 'mt62'" @click="itemClick('delete')">{{$t('mine.manageInfo.deleWallet')}}</button>
     </div>
 
     <van-dialog
@@ -169,25 +171,23 @@
       show-cancel-button 
       :confirmButtonText="$t('commom.passDialog.confirmButtonText')" 
       :cancelButtonText="$t('commom.passDialog.cancelButtonText')" 
-      :before-close="beforePassDialogClose"
-    >
+      :before-close="beforePassDialogClose">
       <div class="dialog-title" style="margin-top: 28px;">{{$t('commom.passDialog.dialogTitle')}}</div class>
       <div class="dialog-password">
-        <input type="password" v-model.trim="psw"  @focus="isShowbutton(1)" @blur="isShowbutton(2)">
+        <input type="password" v-model.trim="psw" @focus="isShowbutton(1)" @blur="isShowbutton(2)">
       </div>
     </van-dialog>
 
     <van-dialog
       v-model="openExportDialog"
       confirm-button-text="" 
-      :show-confirm-button="false" 
-      >
+      :show-confirm-button="false" >
       <div class="dialog-title" style="margin-top: 20px;">
         {{$t('mine.manageInfo.exportPrv')}}
-        <img class="dialog-cloes" src="http://lbtc.io/wallet/static/img/close.png" @click="closeExportDialog">
+        <img class="dialog-cloes" src="https://lbtc.io/wallet/static/img/close.png" @click="closeExportDialog">
       </div>
       <div class="dialog-content">
-        <div class="show-mnemonic">
+        <div class="dialog-content-box">
           {{content}}
         </div>
       </div>
@@ -198,7 +198,7 @@
 
     <van-popup v-model="openChangePsw" position="right">
       <div class="content">
-        <van-nav-bar
+        <van-nav-bar :z-index="1000" 
           :title="$t('mine.manageInfo.changePass')"
           fixed 
           left-arrow
@@ -239,10 +239,6 @@ export default {
       isLoading: false,
       showButton: true,
       addr: '',
-      current_wallet: '',
-      wallet_list: {},
-      info: {},
-      UnSpent: {},
       showMoreBalance: false,
       wallet_name: '',
       openPassDialog: false,
@@ -278,44 +274,21 @@ export default {
   methods:{
     manageInfoInit() {
       this.addr = this.$route.query.addr;
-      this.localforage.getItem('current_wallet').then( current_wallet => {
-        if (current_wallet) {
-          this.current_wallet = current_wallet;
-        }
-      })
-      this.localforage.getItem('wallet_list').then( list => {
-        if (list) {
-          this.wallet_list = list;
-          this.info = list[this.addr];
-          this.wallet_name = this.info.name;
-        }
-      })
-      this.localforage.getItem(this.addr + "+unspent").then( res => {
-        if (res) {
-          this.UnSpent = res
-        }
-      })
-    },
-
-    onClickLeft() {
-      this.$router.back();
+      this.wallet_name = this.walletDB.accounts[this.addr].name;
     },
     
     onClickRight() {
-      if (this.wallet_name == this.info.name) {
+      if (this.wallet_name == this.walletDB.accounts[this.addr].name) {
         return false
       } else {
-        this.info.name = this.wallet_name;
-        this.wallet_list[this.addr] = this.info;
-        this.localforage.setItem('wallet_list', this.wallet_list).then( res => {
-          if (res) {
+        this.lbtcWalletDB.changeName(this.addr, this.wallet_name);
+        this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then( r=> {
             this.manageInfoInit();
             Toast.success({
               duration: 1500,
               message: this.$t('mine.manageInfo.msg1')
             });
-          }
-        });
+        })
       }
     },
 
@@ -326,55 +299,27 @@ export default {
 
     beforePassDialogClose(action, done) {
       if (action == "confirm") {
-        if (this.psw == this.info.psw) {
+        if (this.psw == this.walletDB.accounts[this.addr].password) {
           if (this.type == 'prv') {
-            this.content = this.info.prv;       
+            this.content = this.walletDB.accounts[this.addr].privateKey;       
             done();
             this.openExportDialog = true;
           } else if (this.type == 'mnemonic'){
             done();
-            this.$router.push({ path: "/create-mnemonic", query: { wallet_info: JSON.stringify(this.info), from: 'manageInfo'}});
+            this.$router.push({ path: "/create-mnemonic", query: { wallet_info: JSON.stringify(this.walletDB.accounts[this.addr]), from: 'manageInfo'}});
           } else if (this.type == 'delete') {
-            if (this.info.addr) {
-              delete this.wallet_list[this.addr]
-              this.localforage.setItem('wallet_list', this.wallet_list).then( res => {
-                if (this.addr == this.current_wallet) {
-                  if (Object.keys(this.wallet_list).length > 0) {
-                    for (const key in this.wallet_list) {
-                      if (key) {
-                        this.localforage.setItem('current_wallet', key).then( res => {
-                          if (res) {
-                            Toast.success({
-                              duration: 1500,
-                              message: this.$t('mine.manageInfo.msg2')
-                            });
-                            done();
-                            this.$router.push({ path: '/mine-manage'});
-                            return false
-                          }
-                        })
-                      }
-                    }
-                  } else {
-                    this.localforage.removeItem('current_wallet').then( res => {
-                      Toast.success({
-                        duration: 1500,
-                        message: this.$t('mine.manageInfo.msg2')
-                      });
-                      this.$router.push({ path: "/create-index" });
-                      return false
-                    });
-                  }
-                } else {
-                  Toast.success({
-                    duration: 1500,
-                    message: this.$t('mine.manageInfo.msg2')
-                  });
-                  this.$router.push({ path: '/mine-manage'})
-                  return false
-                }
-              })
-            }
+            this.lbtcWalletDB.deleteaccount(this.addr);
+            Toast.success({
+              duration: 1500,
+              message: this.$t('mine.manageInfo.msg2')
+            });
+            this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then( r=> {
+              if (this.walletDB.current) {
+                this.$router.push({ path: '/mine-manage'});
+              } else {
+                this.$router.push({ path: "/create-index" });
+              }
+            })
           }
           this.psw = '';
         } else {
@@ -394,6 +339,50 @@ export default {
     closeExportDialog() {
       this.openExportDialog = false;
       this.content = '';
+    },
+
+    awaitT() {
+      return new Promise((resolve) => {
+        this.$http.get(this.$api.api.getHeight, { addr: this.addr }).then((r) => {
+          resolve(r.msg)
+        })
+      })
+    },
+
+    resyncData(address) {
+
+      this.$dialog.confirm({
+        title: this.$t('mine.manageInfo.confirmResync'),
+        cancelButtonText: this.$t('commom.passDialog.cancelButtonText'),
+        confirmButtonText: this.$t('commom.passDialog.confirmButtonText')
+      }).then(() => {
+        // on confirm
+        this.$store.commit('setUpdataStatus', false);
+        Toast.loading({
+          duration: 0,
+          mask: true,
+          message: this.$t('import.msg3')
+        });
+  
+        this.$store.dispatch('getWalletTxs', {
+          address: address,
+          currentHeight: 1
+        }).then( data => {
+          this.lbtcWalletDB.accounts[this.addr].histroy = [];
+          this.lbtcWalletDB.accounts[this.addr].availableTxs = [];
+          this.lbtcWalletDB.accounts[this.addr].availableBalance = 0;
+          this.lbtcWalletDB.accounts[this.addr].unavailableTxs = [];
+          this.lbtcWalletDB.accounts[this.addr].unavailableBalance = 0;
+          this.lbtcWalletDB.insertHistroy(address, data);
+          this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then(r => {
+            Toast.clear();
+            this.$store.commit('setUpdataStatus', true);
+          })
+        })
+      }).catch(() => {
+        // on cancel
+      });
+
     },
 
     onCopy() {
@@ -471,34 +460,31 @@ export default {
       if (!this.oldPsw.status || !this.newPsw.status ||!this.reNewPsw.status) {
         return false
       }
-      if (this.oldPsw.value != this.info.psw) {
+      if (this.oldPsw.value != this.walletDB.accounts[this.addr].password) {
         Toast.fail({
           duration: 1500,
           message: this.$t('mine.manageInfo.msg9')
         });
         return false
       }
-      if (this.newPsw.value == this.info.psw) {
+      if (this.newPsw.value == this.walletDB.accounts[this.addr].password) {
         Toast.fail({
           duration: 1500,
           message: this.$t('mine.manageInfo.msg10')
         });
         return false
       }
-      this.info.psw = this.newPsw.value;
-      this.wallet_list[this.addr] = this.info;
-      this.localforage.setItem('wallet_list', this.wallet_list).then( res => {
-        if (res) {
-          this.manageInfoInit();
-          Toast.success({
-            duration: 1500,
-            message: this.$t('mine.manageInfo.msg11')
-          });
-          setTimeout(() => {
-            this.cloesChangePsw();
-          }, 500)
-        }
-      });
+      this.lbtcWalletDB.changePassword(this.addr, this.newPsw.value);
+      this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then( r=> {
+        this.manageInfoInit();
+        Toast.success({
+          duration: 1500,
+          message: this.$t('mine.manageInfo.msg11')
+        });
+        setTimeout(() => {
+          this.cloesChangePsw();
+        }, 500)
+      })
     },
 
     isShowbutton(e) {
@@ -512,7 +498,7 @@ export default {
     },
 
     moreBalance() {
-      if (this.UnSpent.unavailablebalance) {
+      if (this.walletDB.accounts[addr].unavailableBalance) {
         this.showMoreBalance = !this.showMoreBalance;
       } else {
         return false
@@ -520,6 +506,9 @@ export default {
     }
   },
   destroyed(){},
-  watch:{},
+  beforeRouteLeave (to, from, next) {
+    this.$dialog.close();
+    next();
+  }
 }
 </script>

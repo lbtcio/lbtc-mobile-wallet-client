@@ -48,16 +48,16 @@
 </style>
 <template>
   <div id="create-mnemonic">
-    <van-nav-bar
+    <van-nav-bar :z-index="1000" 
       :title="$t('create.mnemonic.navTitle')"
       left-arrow
-      @click-left="onClickLeft"
+      @click-left="$router.goBack()"
     />
 
     <div class="container">
       <div class="input-group" v-if="next">
         <div class="text-center">
-          <img class="msg-icon" src="http://lbtc.io/wallet/static/img/safe@2x.png" alt="">
+          <img class="msg-icon" src="https://lbtc.io/wallet/static/img/safe@2x.png" alt="">
           <h3>{{$t('create.mnemonic.title1')}}</h3>
         </div>
         <p>{{$t('create.mnemonic.content1')}}</p>
@@ -93,7 +93,7 @@
       :show-confirm-button="deFalse" 
       >
       <div class="dialog-msg-icon text-center" style="margin-top: 28px;">
-        <img class="msg-icon" src="http://lbtc.io/wallet/static/img/noscreenshot@2x.png" alt="">
+        <img class="msg-icon" src="https://lbtc.io/wallet/static/img/noscreenshot@2x.png" alt="">
       </div>
       <div class="dialog-title">{{$t('create.mnemonic.dialogTitle')}}</div class>
       <div class="dialog-content">
@@ -126,12 +126,12 @@ export default {
   },
   computed: {},
   created() {
-    if (this.$route.query) {
+    if (this.$route.query && this.$route.query.wallet_info) {
       this.wallet_info = JSON.parse(this.$route.query.wallet_info);
     } else {
       this.$router.back();
     }
-    this.mnemonic = this.wallet_info.mnemonic;
+    this.mnemonic = this.wallet_info.mnemonicWord;
     this.arr2 = this.mnemonic.split(" ");
     this.arr2 = this.randArr(this.arr2);
     this.localforage.getItem('wallet_list').then( list => {
@@ -142,9 +142,6 @@ export default {
   },
   mounted() {},
   methods: {
-    onClickLeft() {
-      this.$router.back();
-    },
     onClickRight() {
       return
     },
@@ -175,9 +172,8 @@ export default {
     },
     confirmMnem() {
       if (this.mnemonic == this.arr1.join(" ")) {
-        this.wallet_info.ispackup = true;
-        this.wallet_list[this.wallet_info.addr] = this.wallet_info
-        this.localforage.setItem('wallet_list', this.wallet_list).then( res => {
+        this.walletDB.accounts[this.wallet_info.address].backupFlag = true;
+        this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then( r=> {
           Toast.success({
             duration: 1000,
             message: this.$t('create.mnemonic.msg1')
@@ -186,7 +182,7 @@ export default {
             if (this.$route.query.from == 'manageInfo') {
               this.$router.back();
             } else {
-              this.$router.push({ path: "/main-index" });
+              this.$router.push({ path: "/main-index/wallet" });
             }
           },400)
         })
@@ -197,8 +193,6 @@ export default {
         })
       }
     }
-  },
-  destroyed() {},
-  watch: {}
+  }
 };
 </script>

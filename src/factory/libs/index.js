@@ -1,16 +1,23 @@
 import Vue from 'vue';
 import http from './http';
 import api from "./api.js";
-// import cookies from 'js-cookie';
+import localforage from 'localforage';
 import calc from 'calculatorjs';
 import bign from 'big-number';
+import decimal from 'decimal.js';
+import moment from "moment";
+import store from "store";
+import wConfig from "../wallet/config";
 
-Vue.prototype.calc = calc;
-Vue.prototype.bign = bign;
-
-Vue.prototype.$api = api;
 
 Vue.prototype.$http = http;
+Vue.prototype.$api = api;
+Vue.prototype.localforage = localforage;
+Vue.prototype.calc = calc;
+Vue.prototype.bign = bign;
+Vue.prototype.decimal = decimal;
+Vue.prototype.localStore = store;
+
 
 Vue.prototype.returnToSuperior = function () {
     window.history.back();
@@ -31,10 +38,15 @@ Vue.prototype.isEmptyString = function (e) {
 }
 
 Vue.prototype.isAddress = function (e) {
-    if (e.replace(/(^s*)|(s*$)/g, "").length > 34 || e.replace(/(^s*)|(s*$)/g, "").length < 26) {
-        return false;
+    let a = {
+        'bitcoin': /^1{1}[A-Za-z0-9]{25,33}$/,
+        'testnet': /^(m|n){1}[A-Za-z0-9]{25,33}$/
+    }
+    let re = a[wConfig.network];
+    if (re.test(e)) {
+        return true
     } else {
-        return true;
+        return false
     }
 }
 
@@ -58,9 +70,13 @@ Vue.prototype.isPc = function () {
     return flag;
 };
 
+Vue.prototype.isArray = function (e) {
+    return e instanceof Array
+}
+
 Vue.prototype.Xreplace = function Xreplace(str, length, reversed) {
-    var re = new RegExp("\\w{1," + length + "}", "g");
-    var ma = str.match(re);
+    let re = new RegExp("\\w{1," + length + "}", "g");
+    let ma = str.match(re);
     if (reversed) ma.reverse();
     for (let i = 0; i < ma.length; i++) {
         ma[i] = parseInt('0x' + ma[i]);
@@ -69,8 +85,8 @@ Vue.prototype.Xreplace = function Xreplace(str, length, reversed) {
 }
 
 Vue.prototype.stringToHex = function (str) {
-    var val = "";
-    for (var i = 0; i < str.length; i++) {
+    let val = "";
+    for (let i = 0; i < str.length; i++) {
         if (val == "")
             val = str.charCodeAt(i).toString(16);
         else
@@ -80,20 +96,20 @@ Vue.prototype.stringToHex = function (str) {
 }
 
 Vue.prototype.hexToString = function (hex) {
-    var val = "";
-    var arr = hex.split(",");
-    for (var i = 0; i < arr.length; i++) {　　
+    let val = "";
+    let arr = hex.split(",");
+    for (let i = 0; i < arr.length; i++) {　　
         val += String.fromCharCode(parseInt(arr[i], 16));
     }
     return val;
 }
 
 Vue.prototype.randArr = function (a) {
-    var len = a.length;
-    for (var i = 0; i < len; i++) {
-        var end = len - 1;
-        var index = (Math.random() * (end + 1)) >> 0;
-        var t = a[end];
+    let len = a.length;
+    for (let i = 0; i < len; i++) {
+        let end = len - 1;
+        let index = (Math.random() * (end + 1)) >> 0;
+        let t = a[end];
         a[end] = a[index];
         a[index] = t;
     }
@@ -116,7 +132,7 @@ Vue.prototype.chunkArry = function (array, size) {
 }
 
 Vue.prototype.versionCompare = function(a, b) {
-    var _a = toNum(a), _b = toNum(b);   
+    let _a = toNum(a), _b = toNum(b);   
     if(_a == _b) {
         return false;
     } else if(_a > _b) {
@@ -126,15 +142,40 @@ Vue.prototype.versionCompare = function(a, b) {
     }
 }
 
+Vue.filter('formatHash', function (value) {
+    let subStr1 = value.slice(0,8);
+    let subStr2 = value.slice(-8);
+    let subStr = subStr1 + "..." + subStr2 ;
+    return subStr;
+})
+
+Vue.filter('formatTime', function (value, type) {
+    if (String(value).length == 10) {
+        switch (type) {
+            case 1: 
+                return moment(value*1000).format("YYYY/MM/DD");
+            case 2: 
+                return moment(value*1000).format("YYYY/MM/DD HH:mm:ss");
+        }
+    } else if (String(value).length == 13) {
+        switch (type) {
+            case 1: 
+                return moment(value).format("YYYY/MM/DD");
+            case 2: 
+                return moment(value).format("YYYY/MM/DD HH:mm:ss");
+        }
+    }
+})
+
 function toNum (a) {
-    var a = a.toString();
-    var c = a.split(/\./);//或者： var c = a.split('.');
-    var num_place = ["","0","00","000","0000"], r = num_place.reverse();
-    for (var i = 0; i< c.length; i++){ 
-        var len = c[i].length;       
+    a = a.toString();
+    let c = a.split(/\./);// or： let c = a.split('.');
+    let num_place = ["","0","00","000","0000"], r = num_place.reverse();
+    for (let i = 0; i< c.length; i++){ 
+        let len = c[i].length;       
         c[i] = r[len] + c[i];  
     } 
-    var res = c.join(''); 
+    let res = c.join(''); 
     return res; 
 }
 

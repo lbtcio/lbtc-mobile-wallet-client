@@ -31,25 +31,32 @@
   .input-group {
     padding-left: 0;
     padding-right: 0;
-}
+  }
+  .qr-hide {
+    opacity: 0;
+    transition: all 0.2s;
+  }
+  .qr-show {
+    opacity: 1; 
+  }
 }
 </style>
 <template>
   <div id="wallet-receive">
-    <van-nav-bar
+    <van-nav-bar :z-index="1000" 
       :title="$t('wallet.receive.navTitle')"
       left-arrow
-      @click-left="onClickLeft"
+      @click-left="$router.goBack()"
     />
     <div class="container">
-      <div class="addr-qr">
-        <qrcode-vue :value="address" size="240" level="H" class="qrcode"></qrcode-vue>
+      <div class="addr-qr qr-hide" :class="walletDB.current ? 'qr-show': ''">
+        <qrcode-vue :value="walletDB.current" size="200" level="H" v-if="walletDB.current"></qrcode-vue>
       </div>
       <div class="addr-title">{{$t('wallet.receive.title')}}:</div>
-      <div class="addr-addr">{{address}}</div>
+      <div class="addr-addr">{{walletDB.current}}</div>
 
       <div class="input-group">
-        <button class="yellow" v-clipboard:copy="address" v-clipboard:success="onCopy" v-clipboard:error="onError">{{$t('wallet.receive.copyToClipboard')}}</button>
+        <button class="yellow" v-clipboard:copy="walletDB.current" v-clipboard:success="onCopy" v-clipboard:error="onError">{{$t('wallet.receive.copyToClipboard')}}</button>
       </div>
     </div>
   </div>
@@ -65,21 +72,12 @@ export default {
   },
   props:{},
   data(){
-    return {
-      address: ''
-    }
+    return {}
   },
   computed:{},
-  created(){
-    this.localforage.getItem("current_wallet").then( addr => {
-      this.address = addr;
-    })
-  },
+  created(){},
   mounted(){},
   methods:{
-    onClickLeft() {
-      this.$router.back();
-    },
     onClickRight() {
       return
     },
@@ -95,8 +93,6 @@ export default {
         message: this.$t('wallet.receive.msg2')
       });
     }
-  },
-  destroyed(){},
-  watch:{},
+  }
 }
 </script>

@@ -3,8 +3,16 @@
  */
 
 let wConfig = {
-  feeRate: 55,
-  version: '1.0.1',
+  feeRate: 20,
+  version: '1.0.4',
+  txSetVersion: '65282',
+  network: 'bitcoin',
+  // network: 'testnet',
+  point: 100000000,
+  fees: {
+    regDelegate: 1,   // Register as an agent
+    vote: 0.01        // Vote agent
+  },
   terms: `
     <p class="text-center">MyLBTC服务协议</p>
     <p>尊敬的用户：</p>
@@ -159,10 +167,7 @@ let wConfig = {
     <p>MyLBTC</p>
 
     <br>
-    <br>`,
-  versionLog: [
-    
-  ]
+    <br>`
 }
 
 export default wConfig

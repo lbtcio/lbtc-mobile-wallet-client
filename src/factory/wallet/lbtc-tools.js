@@ -1,9 +1,12 @@
-import bs58 from 'bs58';
-import bs58check from "bs58check";
-import iconv from 'iconv-lite';
+var bs58check = require('bs58check');
+var iconv = require('iconv-lite');
+var ProtoBuf = require("protobufjs");
+var Long = require('long');
+var protoRoot = require('../../proto/proto');
 
 var LBTCtools = {};
 
+/** Tools **/
 LBTCtools.StringtoHex = function (str) {
   var val = "";
   for (var i = 0; i < str.length; i++) {
@@ -15,7 +18,6 @@ LBTCtools.StringtoHex = function (str) {
   }
   return val;
 }
-
 
 LBTCtools.StringLengthProcess = function (str) {
   if (typeof (str) !== "string") {
@@ -62,7 +64,6 @@ LBTCtools.StringLengthProcess = function (str) {
   }
 }
 
-
 LBTCtools.ProBillTool = function (param) {
     param = iconv.encode(param, 'utf8');
 
@@ -84,7 +85,132 @@ LBTCtools.ProBillTool = function (param) {
     return paramRes
 }
 
+LBTCtools.BufferRegisteNameMsg = function(opid,name){
+    // var root = ProtoBuf.loadSync("./lbtc.proto");
+    // var textMessage = root.lookupType("LbtcPbMsg.RegisteNameMsg");
+    var textMessage = protoRoot.lookup("LbtcPbMsg.RegisteNameMsg");
+    var payload = {
+        opid: opid,
+        name:name
+    };
 
+    var errMsg = textMessage.verify(payload);
+    if (errMsg) throw Error(errMsg);
+
+    var message = textMessage.create(payload); // or use .fromObject if conversion is necessary
+    var buffer = textMessage.encode(message).finish();
+
+    let tempParam = '';
+    for (let p of buffer) {
+        let s = p.toString(16)
+        if(s.length == 1){
+            s = '0' + s;
+        }
+        tempParam += s
+    }
+
+    let bufPre = "00000000";
+    return bufPre + tempParam;
+}
+
+LBTCtools.BufferCreateTokenMsg = function(opid,tokenaddress,name,symbol,totalamount,digits){
+    // var root = ProtoBuf.loadSync("./lbtc.proto");
+    // var textMessage = root.lookupType("LbtcPbMsg.CreateTokenMsg");
+    var textMessage = protoRoot.lookup("LbtcPbMsg.CreateTokenMsg");
+    var payload = {
+        opid: opid,
+        tokenaddress:tokenaddress,
+        name:name,
+        symbol : symbol,
+        totalamount: Long.fromValue(totalamount),
+        digits : digits
+    };
+
+    var errMsg = textMessage.verify(payload);
+    if (errMsg) throw Error(errMsg);
+
+    var message = textMessage.create(payload); // or use .fromObject if conversion is necessary
+    var buffer = textMessage.encode(message).finish();
+
+    let tempParam = '';
+    for (let p of buffer) {
+        let s = p.toString(16)
+        if(s.length == 1){
+            s = '0' + s;
+        }
+        tempParam += s
+    }
+
+    let bufPre = "00000001";
+    return bufPre + tempParam;
+}
+
+LBTCtools.BufferTransferTokenMsg = function(opid,dstAddress,tokenid,amount,comment){
+    // var root = ProtoBuf.loadSync("./lbtc.proto");
+    // var textMessage = root.lookupType("LbtcPbMsg.TransferTokenMsg");
+    var textMessage = protoRoot.lookup("LbtcPbMsg.TransferTokenMsg");
+    var payload = {
+        opid: opid,
+        dstAddress:dstAddress,
+        tokenid:tokenid,
+        amount : Long.fromValue(amount),
+        comment : comment
+    };
+
+    var errMsg = textMessage.verify(payload);
+    if (errMsg) throw Error(errMsg);
+
+    var message = textMessage.create(payload); // or use .fromObject if conversion is necessary
+    var buffer = textMessage.encode(message).finish();
+
+    let tempParam = '';
+    for (let p of buffer) {
+        let s = p.toString(16)
+        if(s.length == 1){
+            s = '0' + s;
+        }
+        tempParam += s
+    }
+
+    let bufPre = "00000001";
+    return bufPre + tempParam;
+}
+
+LBTCtools.BufferLockTokenMsg = function(opid,dstAddress,tokenid,amount,comment,expiryheight){
+    // var root = ProtoBuf.loadSync("./lbtc.proto");
+    // var textMessage = root.lookupType("LbtcPbMsg.LockTokenMsg");
+    var textMessage = protoRoot.lookup("LbtcPbMsg.LockTokenMsg");
+    var payload = {
+        opid: opid,
+        dstAddress:dstAddress,
+        tokenid:tokenid,
+        amount : Long.fromValue(amount),
+        comment : comment,
+        expiryheight : Long.fromValue(expiryheight)
+    };
+
+    var errMsg = textMessage.verify(payload);
+    if (errMsg) throw Error(errMsg);
+
+    var message = textMessage.create(payload); // or use .fromObject if conversion is necessary
+    var buffer = textMessage.encode(message).finish();
+
+    let tempParam = '';
+    for (let p of buffer) {
+        let s = p.toString(16)
+        if(s.length == 1){
+            s = '0' + s;
+        }
+        tempParam += s
+    }
+
+    let bufPre = "00000001";
+    return bufPre + tempParam;
+}
+
+
+/** Function **/
+// Reg Forged Node
 LBTCtools.RegForgedNode = function (name) {
   let prefix = "00000000";
   let op_code = "c0";
@@ -111,6 +237,7 @@ LBTCtools.RegForgedNode = function (name) {
 }
 
 
+// Vote Forged Node (c1) or cancel (c2)
 LBTCtools.VoteForgedNode = function (addrs,opCode) {
   if (!(addrs instanceof Array)) {
     return "param is not array";
@@ -136,14 +263,17 @@ LBTCtools.VoteForgedNode = function (addrs,opCode) {
   for (let addr of addrs) {
     let resStr = ""
     let pubKey = bs58check.decode(addr).toString('hex').replace(/\b(0+)/gi, "");
-    let pubkeyLen = pubKey.length
+    let pubkeyLen = pubKey.length;
 
-    let tempLen = sLen - pubkeyLen
+    let tempLen = sLen - pubkeyLen;
     if(tempLen > 0){
-        for (let i=1;i<=tempLen;i++){
+        for (let i=1; i<=tempLen; i++){
             pubKey = '0' + pubKey
         }
-        pubkeyLen = pubkeyLen + tempLen
+        pubkeyLen = pubkeyLen + tempLen;
+    } else {
+      pubKey = pubKey.slice(-sLen);
+      pubkeyLen = pubKey.length
     }
 
     let resLen = LBTCtools.StringLengthProcess(pubKey.slice(0, pubkeyLen / 2));
@@ -160,11 +290,12 @@ LBTCtools.VoteForgedNode = function (addrs,opCode) {
     Vres += resStr;
   }
 
-  let fRes = prefix + op_code + addrCount + Vres
+  let fRes = prefix + op_code + addrCount + Vres;
   return fRes
 }
 
 
+// Reg Board Members (Not tested)
 LBTCtools.RegBoardMembers = function (name,url) {
     if (arguments.length !== 2){
         return "arguments error!";
@@ -215,6 +346,7 @@ LBTCtools.RegBoardMembers = function (name,url) {
 }
 
 
+// Vote Board Members (c4) or Cancel (c5)  (Not tested)
 LBTCtools.VoteBoardMembers = function (addr,opCode) {
     if (opCode !== "c4" && opCode !== "c5"){
         return "opcode != c4 or c5";
@@ -233,6 +365,9 @@ LBTCtools.VoteBoardMembers = function (addr,opCode) {
             pubKey = '0' + pubKey
         }
         pubkeyLen = pubkeyLen + tempLen
+    } else {
+      pubKey = pubKey.slice(-sLen);
+      pubkeyLen = pubKey.length
     }
 
     let resLen = LBTCtools.StringLengthProcess(pubKey.slice(0, pubkeyLen / 2));
@@ -245,12 +380,12 @@ LBTCtools.VoteBoardMembers = function (addr,opCode) {
 
     let resStr = resLen + pubKey;
 
-
     let fRes = prefix + op_code + resStr
     return fRes
 }
 
 
+// table the bill, param: options | array (Not tested)
 LBTCtools.TableTheBill = function (title,detail,url,endtime,options) {
     let prefix = "00000000";
     let op_code = 'c6';
@@ -263,6 +398,7 @@ LBTCtools.TableTheBill = function (title,detail,url,endtime,options) {
     endtime = parseInt(tiemstamp) + 3600 * 24 * parseInt(endtime)
     let endtimeBill = LBTCtools.ProBillTool(endtime.toString())
 
+    //options array length
     let optionsCount = options.length;
     optionsCount = optionsCount.toString(16)
     if (optionsCount.length === 1) {
@@ -280,6 +416,7 @@ LBTCtools.TableTheBill = function (title,detail,url,endtime,options) {
 }
 
 
+// Vote To Bill (Not tested)
 LBTCtools.VoteToBill = function (billId,option) {
     let prefix = "00000000";
     let op_code = 'c7';
@@ -293,8 +430,75 @@ LBTCtools.VoteToBill = function (billId,option) {
 }
 
 
+/** Class Token**/
+// Registe Name (Not tested)
+LBTCtools.RegisteName = function(opid,name){
+    // token pf
+    let createTokenBuf = LBTCtools.BufferRegisteNameMsg(opid,name);
+    let prefix = "00000000";
+    let op_code = "01";
+
+    let lenStr = createTokenBuf.slice(0,createTokenBuf.length/2);
+    let bufLen = LBTCtools.StringLengthProcess(lenStr);
+    let res = bufLen + createTokenBuf;
+
+    let op_return = prefix + op_code + res;
+    return op_return;
+}
+
+
+// Create Token. (Not tested)
+LBTCtools.CreateToken = function(opid,tokenaddress,name,symbol,totalamount,digits){
+    // token pf 
+    let createTokenBuf = LBTCtools.BufferCreateTokenMsg(opid,tokenaddress,name,symbol,totalamount,digits);
+
+    let prefix = "00000000";
+    let op_code = "01";
+
+    let lenStr = createTokenBuf.slice(0,createTokenBuf.length/2);
+    let bufLen = LBTCtools.StringLengthProcess(lenStr);
+    let res = bufLen + createTokenBuf;
+
+    let op_return = prefix + op_code + res;
+    return op_return;
+}
+
+
+// Transfer Token (Not tested)
+LBTCtools.TransferToken = function(opid,dstAddress,tokenid,amount,comment){
+    // token pf 
+    let createTokenBuf = LBTCtools.BufferTransferTokenMsg(opid,dstAddress,tokenid,amount,comment);
+
+    let prefix = "00000000";
+    let op_code = "01";
+
+    let lenStr = createTokenBuf.slice(0,createTokenBuf.length/2);
+    let bufLen = LBTCtools.StringLengthProcess(lenStr);
+    let res = bufLen + createTokenBuf;
+
+    let op_return = prefix + op_code + res;
+    return op_return;
+}
+
+
+//Lock Token (Not tested)
+LBTCtools.TransferToken = function(opid,dstAddress,tokenid,amount,comment,expiryheight){
+    //token pf 
+    let createTokenBuf = LBTCtools.BufferLockTokenMsg(opid,dstAddress,tokenid,amount,comment,expiryheight);
+
+    let prefix = "00000000";
+    let op_code = "01";
+
+    let lenStr = createTokenBuf.slice(0,createTokenBuf.length/2);
+    let bufLen = LBTCtools.StringLengthProcess(lenStr);
+    let res = bufLen + createTokenBuf;
+
+    let op_return = prefix + op_code + res;
+    return op_return;
+}
+
+
+
 export default {
-  LBTCtools,
-  bs58,
-  bs58check
+    LBTCtools
 }

@@ -4,16 +4,19 @@
     padding: 15px 0;
     font-size: 12px;
     color: #666;
+    overflow: auto;
     .tag {
-      margin: 5px;
+      margin: 2px 4px;
       float: left;
+      height: 24px;
+      line-height: 24px;
     }
   }
 }
 </style>
 <template>
   <div id="vote-votes">
-    <van-nav-bar :title="$t('vote.votes.navTitle')" fixed left-arrow @click-left="onClickLeft" />
+    <van-nav-bar :z-index="1000" :title="$t('vote.votes.navTitle')" fixed left-arrow @click-left="$router.goBack()" />
 
     <div class="container fixed-container">
       <div class="content">
@@ -48,12 +51,7 @@ export default {
   methods: {
     votesInit() {
       this.votesList = JSON.parse(this.$route.query.votes);
-    },
-    onClickLeft() {
-      this.$router.back();
     }
-  },
-  destroyed() {},
-  watch: {}
+  }
 };
 </script>

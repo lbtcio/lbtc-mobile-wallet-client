@@ -27,7 +27,6 @@
         flex: 1;
       }
       .wallet-name {
-        // word-break: break-all;
         width: 100%;
         margin-bottom: 5px;
         overflow: hidden;
@@ -37,7 +36,6 @@
       .wallet-addr {
         word-break: break-all;
         color: #999;
-        // width: 60%;
       }
     }
     .wallet-item-bottom {
@@ -47,34 +45,50 @@
   }
   .buttom-button {
     position: fixed;
+    background-color: #fff;
+    box-shadow:0px 1px 9px 0px rgba(29,90,163,0.33);
     bottom: -1px;
     left: 0;
     right: 0;
     display: flex;
-    & > div {
+    align-items: center;
+    img {
+      height: 20px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+    .buttom-button-item {
       flex: 1;
       height: 48px;
       line-height: 48px;
       text-align: center;
+      align-items: center;
+    }
+    .buttom-button-middle {
+      height: 36px;
+      width: 1px;
+      border-color: #e5e5e5;
+      background-color: #e5e5e5;
     }
   }
 }
 </style>
 <template>
   <div id="mine-manage">
-    <van-nav-bar :title="$t('mine.manage.navTitle')" fixed left-arrow @click-left="onClickLeft" />
+    <van-nav-bar :z-index="1000" :title="$t('mine.manage.navTitle')" fixed left-arrow @click-left="goBack()" />
 
     <scroller class="container fixed-container" :on-refresh="refresh" :refreshText="$t('main.refresh')" :noDataText="$t('main.noMoreData')" ref="myscroller">
 
       <div class="content">
-        <div class="wallet-item" v-for="(value, key, index) in wallet_list" :v-for="key" @click="toManageInfo(key)">
+        <div class="wallet-item" v-for="(item, index) in walletDB.addresses" :v-for="item" @click="toManageInfo(item)">
           <div class="wallet-item-top">
             <div class="wallet-photo">
-              <img :src="'http://lbtc.io/wallet/static/img/photo/1/' + value.photo + '.png'" alt="">
+              <img :src="'https://lbtc.io/wallet/static/img/photo/1/' + walletDB.accounts[item].avatar + '.png'" alt="">
             </div>
             <div class="wallet-content">
-              <div class="wallet-name">{{value.name}}</div>
-              <div class="wallet-addr">{{key}}</div>
+              <div class="wallet-name">{{walletDB.accounts[item].name}}</div>
+              <div class="wallet-addr">{{walletDB.accounts[item].address}}</div>
             </div>
           </div>
           <div class="wallet-item-bottom"> </div>
@@ -84,8 +98,15 @@
     </scroller>
 
     <div class="buttom-button">
-      <div class="buttom-button-right yellow-color" @click="toCreate">{{$t('create.index.createWallet')}}</div>
-      <div class="buttom-button-left default-color" @click="toImport">{{$t('create.index.importWallet')}}</div>
+      <div class="buttom-button-item fyellow" @click="toImport">
+        <img src="https://lbtc.io/wallet/static/img/manager-import.png" alt="">
+          {{$t('create.index.importWallet')}}
+      </div>
+      <div class="buttom-button-middle"></div>
+      <div class="buttom-button-item fblue" @click="toCreate">
+        <img src="https://lbtc.io/wallet/static/img/manager-create.png" alt="">
+        {{$t('create.index.createWallet')}}
+      </div>
     </div>
 
   </div>
@@ -98,8 +119,7 @@ export default {
   props: {},
   data() {
     return {
-      allLoaded: true,
-      wallet_list: {}
+      allLoaded: true
     };
   },
   computed: {},
@@ -112,15 +132,10 @@ export default {
       setTimeout(() => {
         Toast.clear();
       }, 500)
-      this.localforage.getItem("wallet_list").then(list => {
-        if (list) {
-          this.wallet_list = list;
-        }
-      });
     },
-    
-    onClickLeft() {
-      this.$router.push({ path: '/main-index'})
+
+    goBack() {
+      this.$router.push({path: "/main-index/mine"});
     },
 
     toManageInfo(key) {
@@ -152,8 +167,6 @@ export default {
         done();
       }, 1000);
     }
-  },
-  destroyed() {},
-  watch: {}
+  }
 };
 </script>

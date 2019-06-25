@@ -1,5 +1,6 @@
 export default {
     commom: {
+        quit: 'Tap again to exit',
         tx: {
             confirmInfoTX: 'Transaction Details',
             confirmInfoType: 'Transaction Type',
@@ -12,17 +13,27 @@ export default {
             dialogConfirm: 'Confirm',
             dialogTxID: 'Transaction ID',
             dialogCopy: 'Copy',
-            msg1: 'Cannot be empty',
-            msg2: 'Length cannot exceed 32 bytes',
-            msg3: 'Registering...',
-            msg4: 'Insufficient balance',
-            msg5: 'Password Incorrect',
-            msg6: 'Packing...',
-            msg7: 'Sending...',
-            msg8: 'Sent successfully, waiting for the incoming block',
-            msg9: 'Copied',
-            msg10: 'Copy error',
-            selectAgent: 'Choose delegate'
+            notEmpty: 'Cannot be empty',
+            tooLong32: 'Length cannot exceed 32 bytes',
+            reging: 'Registering...',
+            insufficient: 'Insufficient balance',
+            insufficientFee: 'Insufficient fee',
+            incorrect: 'Password Incorrect',
+            packing: 'Packing...',
+            sending: 'Sending...',
+            success: 'Sent successfully, waiting for the incoming block',
+            notConfirmed: 'The last transaction has not been confirmed',
+            copied: 'Copied',
+            copyError: 'Copy error',
+            selectAgent: 'Choose delegate',
+            scan: 'Scan',
+            qrWarn: 'This device is not supported',
+            unablePic: 'Unable to recognize this picture',
+            noQrcode: 'Not a QR code',
+            scanAgain: 'Scan Again',
+            openGallery: 'Open Gallery',
+            gallery: 'Gallery',
+            merginWallet: 'Merging wallets'
         },
         passDialog: {
             dialogTitle: 'Please enter password',
@@ -44,6 +55,34 @@ export default {
             version: '1.0.1',
             content: [
                 'Modify known bug'
+            ]
+        },
+        {
+            version: '1.0.2',
+            content: [
+                'New UI',
+                'Optimizing user experience',
+                'Modify known bug'
+            ]
+        },
+        {
+            version: '1.0.3',
+            content: [
+                'Modify images display issues',
+                'Code optimization'
+            ]
+        },
+        {
+            version: '1.0.4',
+            content: [
+                'Add send all function',
+                'Add scan QR code function',
+                'Add error log',
+                'Display fee',
+                'Display Confirming transaction',
+                'Reduce Fee',
+                'Modify known bug',
+                'Optimize user experience'
             ]
         }
     ],
@@ -121,6 +160,7 @@ export default {
         cancelButtonText: 'Cancel',
         refresh: 'Pull down to refresh',
         infinite: 'More',
+        loading: 'Loading...',
         noMoreData: 'No more data',
         noData: 'No data'
     },
@@ -130,7 +170,9 @@ export default {
             currentVersion: 'Current Version',
             about: 'Lightning Wallet is a mobile light wallet app designed for Lightning Bitcoin (LBTC). Currently, it only supports LBTC transfer and node voting. It is designed to provide LBTC users with a safe and secure digital asset wallet application.',
             term: 'Terms of Service',
-            log: 'Version Release',
+            versionLog: 'Version Release',
+            errorLog: 'Error Release',
+            network: 'Network',
             checkVersion: 'Check for updates',
             popupNavTitle1: 'Terms of Service and Privacy policy',
             popupNavTitle2: 'Version Release',
@@ -214,12 +256,12 @@ export default {
             ]
         },
         index: {
-            title1: 'Manage Wallet',
-            title2: 'Transaction Records',
-            title3: 'Contacts',
-            title4: 'Settings',
-            title5: 'Help',
-            title6: 'About us'
+            manager: 'Manage Wallet',
+            his: 'Transaction Records',
+            addrs: 'Contacts',
+            set: 'Settings',
+            help: 'Help',
+            about: 'About us'
         },
         manage: {
             navTitle: 'Manage Wallet'
@@ -232,6 +274,8 @@ export default {
             changePass: 'Change Password',
             exportPrv: 'Export Private Key',
             packupMnem: 'Backup Mnemonic',
+            confirmResync: 'Confirm resync data?',
+            resync: 'Resync data',
             deleWallet: 'Delete Wallet',
             copy: 'Copy',
             popupNavTitle: 'Change Password',
@@ -261,6 +305,7 @@ export default {
         },
         txHis: {
             navTitle: 'Transaction Records',
+            confirming: 'Confirming',
             title: 'Recent transaction history',
             msg1: 'No Records',
             msg2: 'Completed',
@@ -278,9 +323,58 @@ export default {
             title8: 'Copy error'
         }
     },
+    news: {
+        topLevelChannel: {
+            news: 'News',
+            lbtc: 'LBTC'
+        },
+        secondLevelChannel: {
+            news: [
+                {
+                    name: 'All',
+                    class: 'newsAll'
+                },
+                {
+                    name: 'LBTC',
+                    class: 'lbtcnews'
+                },
+                {
+                    name: 'Info',
+                    class: 'information'
+                },
+                {
+                    name: 'Like',
+                    class: 'collection'
+                }
+            ],
+            lbtc: [
+                {
+                    name: 'All',
+                    class: 'lbtcAll'
+                },
+                {
+                    name: 'Report',
+                    class: 'report'
+                },
+                {
+                    name: 'ANN',
+                    class: 'announcement'
+                },
+                {
+                    name: 'Tutorial',
+                    class: 'tutorial'
+                },
+                {
+                    name: 'Article',
+                    class: 'article'
+                }
+            ]
+        }
+    },
     vote: {
         index: {
             navTitle: 'LBTC Node Election',
+            delegateName: 'Delegate Name : ',
             item1: 'View votes',
             item1Msg1: 'Receive votes',
             item1Msg2: 'Voted',
@@ -302,7 +396,7 @@ export default {
             balance: 'Balance',
             namePlaceholder: 'Please enter a name',
             warnMsg: 'Delegate registration fee charges 1LBTC',
-            next: 'Next'
+            next: 'Register'
         },
         vote: {
             navTitle: 'Delegates List',
@@ -323,10 +417,10 @@ export default {
             button2: 'Cancel the vote'
         },
         voters: {
-            navTitle: 'Voters',
+            navTitle: 'Addresses',
         },
         votes: {
-            navTitle: 'Votes',
+            navTitle: 'Delegates',
         }
     },
     wallet: {
@@ -339,28 +433,34 @@ export default {
             payMoney: 'Amount',
             balance: 'Balance',
             moneyInputPlaceholder: 'Amount',
-            next: 'Next',
+            next: 'Send',
             selectionAddr: 'Select contact',
             noAddrContent: 'No contact, please',
             noAddrAddAddr: 'Add contact',
             checkWarnMsg1: 'Address cannot be empty',
             checkWarnMsg2: 'Address wrong',
-            checkWarnMsg3: 'Invalid amoun',
+            checkWarnMsg3: 'Invalid amount',
             checkWarnMsg4: 'Amount in excess of balance',
             checkWarnMsg5: 'The amount is too small',
             checkWarnMsg6: 'No more than 8 decimal places',
+            checkWarnMsg7: 'Address cannot be the same'
         },
         index: {
-            backup: 'Please Backup',
+            assets: 'Assets',
+            myAssets: 'My Assets',
+            backup: 'Backup',
             availablebalance: 'available',
             unavailablebalance: 'unavailable',
-            tabName1: 'Send',
-            tabName2: 'Receive',
-            tabName3: 'Vote',
+            tabSend: 'Send',
+            tabNode: 'Node',
+            tabGovernance: 'SGS',
+            tabRegister: 'Register',
+            tabToken: 'Token',
+            tabReceive: 'Receive',
+            tabVote: 'Vote',
             moreHisContent: 'Display up to 10 items, click',
             moreHisButton: 'More',
             walletListTitle: 'My Wallet',
-
         },
         receive: {
             navTitle: 'Receive LBTC',
@@ -368,6 +468,66 @@ export default {
             copyToClipboard: 'Copy to the clipboard',
             msg1: 'Copied',
             msg2: 'Copy error'
+        },
+        add:{
+            navTitle: 'Add new assets',
+            noticeTittle: 'Notice',
+            noticeContent: 'Are you Adding',
         }
+    },
+    governance: {
+        index: {
+            navTitle:'LBTC On-Chain Governance',
+            itemResCommittee: 'Register Committee',
+            itemVoteCommittee: 'Vote Committee',
+            itemCancelCommittee: 'Cancel Vote Committee',
+            itemProposal: 'Proposal',
+            itemVoteProposal: 'Vote Proposal'
+        },
+        committeeRegister: {
+            navTitle: 'Register as a committee',
+            enterURL: 'Please enter the URL',
+            confirmInfoTxType: 'Register committee',
+        },
+        proposal: {
+            navTitle: 'Submit proposal',
+            submitAddr: 'Submit address',
+            title: 'Title',
+            titlePlaceholder: 'Please enter the title',
+            detail: 'Detail',
+            detailPlaceholder: 'Please enter the detail',
+            url: 'URL',
+            urlPlaceholder: 'Please enter the URL',
+            time: 'End time',
+            timePlaceholder: 'Please enter end time',
+            timeSuffix: 'day(s) later',
+            option: 'Pption',
+            submitProposal: 'Submit proposal',
+            feeMsg: 'Submit proposal fee charges 3LBTC'
+        }
+    },
+    register: {
+        navTitle: 'Register Username',
+        confirmInfoTxType: 'Register username',
+        addr: 'Address',
+        userName: 'Username',
+        userNamePlaceholder: '3 to 16 digits, letters, numbers and underline',
+        point: 'PS：',
+        confirmInfoTxType: 'Register',
+        next: 'Register'
+    },
+    token: {
+        navTitle: 'Create Token',
+        userName: 'Username',
+        tokenLongName: 'Token long name',
+        tokenShortName: 'Token short name',
+        total: 'Total',
+        point: 'Point',
+        createAddress: 'Create address',
+        tokenAddress: 'Token address',
+        next: 'Next',
+        warnHelp: 'Help',
+        warnFees: 'Fees 10LBTC',
+        confirmInfoTxType: 'Create Token'
     }
 };

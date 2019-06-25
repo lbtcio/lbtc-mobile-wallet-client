@@ -28,6 +28,11 @@
       letter-spacing: .5px;
     }
   }
+  .version-content, 
+  .term-content {
+    height: 100vh;
+    overflow-y: auto;
+  }
   .version-content {
     p {
       font-size: 14px;
@@ -48,11 +53,11 @@
 </style>
 <template>
   <div id="mine-about">
-    <van-nav-bar :title="$t('mine.about.navTitle')" fixed left-arrow @click-left="onClickLeft" />
+    <van-nav-bar :z-index="1000" :title="$t('mine.about.navTitle')" fixed left-arrow @click-left="$router.goBack()" />
 
     <div class="container fixed-container">
       <div class="about-header">
-        <img class="" src="http://lbtc.io/wallet/static/img/logo.png" alt="">
+        <img class="" src="https://lbtc.io/wallet/static/img/logo.png" alt="">
         <div class="version">
           {{$t('mine.about.currentVersion')}} v{{currrntVersion}}
         </div>
@@ -62,14 +67,16 @@
       </div>
       <van-cell-group>
         <van-cell :title="$t('mine.about.term')" is-link @click="openTerms = true"/>
-        <van-cell :title="$t('mine.about.log')" is-link @click="openVersionLog = true"/>
+        <van-cell :title="$t('mine.about.versionLog')" is-link @click="openVersionLog = true"/>
+        <van-cell :title="$t('mine.about.errorLog')" is-link @click="openErrorLog = true"/>
+        <van-cell :title="$t('mine.about.network')" :value="wConfig.network == 'bitcoin' ? 'Mainnet' : 'Testnet'" />
         <van-cell :title="$t('mine.about.checkVersion')" @click="checkVersion"/>
       </van-cell-group>
     </div>
 
     <!-- Term -->
     <van-popup v-model="openTerms" position="right">
-      <van-nav-bar
+      <van-nav-bar :z-index="1000" 
         :title="$t('create.create.termTitle')"
         left-arrow
         fixed 
@@ -79,10 +86,10 @@
       </div>
     </van-popup>
 
-    <!-- Log -->
+    <!-- Version Log -->
     <van-popup v-model="openVersionLog" position="right">
-      <van-nav-bar
-        :title="$t('mine.about.log')"
+      <van-nav-bar :z-index="1000" 
+        :title="$t('mine.about.versionLog')"
         left-arrow
         fixed 
         @click-left="openVersionLog = false"
@@ -94,6 +101,33 @@
             <li v-for="l in item.content">{{l}}</li>
           </ul>
         </div>
+        <br>
+      </div>
+    </van-popup>
+
+    <!-- Error Log -->
+    <van-popup v-model="openErrorLog" position="right">
+      <van-nav-bar :z-index="1000" 
+        :title="$t('mine.about.errorLog')"
+        left-arrow
+        fixed 
+        @click-left="openErrorLog = false"
+      />
+      <div class="container fixed-container version-content">
+        <div v-for="item in localeLog" v-if="localeLog.length">
+          <p>{{item.time}}</p>
+          <ul>
+            <li v-if="item.status">Status: {{item.status}}</li>
+            <li v-if="item.statusText">StatusText: {{item.statusText}}</li>
+            <li v-if="item.url">URL: {{item.url}}</li>
+            <li v-if="item.msg">Msg: {{item.msg}}</li>
+          </ul>
+        </div>
+        <div class="text-center f666" v-if="!localeLog.length">
+          <img class="nodata" src="https://lbtc.io/wallet/static/img/nodata.png">
+          {{$t('main.noData')}}
+        </div>
+        <br>
       </div>
     </van-popup>
 
@@ -102,7 +136,6 @@
 
 <script>
 import { Toast } from 'vant';
-import wConfig from "../../factory/wallet/config.js"
 
 export default {
   components:{
@@ -114,24 +147,24 @@ export default {
       currrntVersion: '',
       termContent: '',
       logContent: '',
+      localeLog: '',
       activeName: 0,
       openTerms: false,
-      openVersionLog: false
+      openVersionLog: false,
+      openErrorLog: false
     }
   },
   computed:{
     
   },
   created(){
-    this.currrntVersion = wConfig.version;
-    this.termContent = wConfig.terms;
+    this.currrntVersion = this.wConfig.version;
+    this.termContent = this.wConfig.terms;
     this.logContent = this.$t('versionLog');
+    this.localeLog = localStorage.getItem('Log') ? JSON.parse(localStorage.getItem('Log')).reverse() : [];
   },
   mounted(){},
   methods:{
-    onClickLeft() {
-      this.$router.back();
-    },
 
     checkVersion() {
       Toast.loading({
@@ -142,7 +175,7 @@ export default {
         param: 'getversion'
       }).then( res => {
         this.vData = res;
-        if (this.versionCompare(this.vData.version, wConfig.version)) {
+        if (this.versionCompare(this.vData.version, this.wConfig.version)) {
           this.openDialog();
         } else {
           window.setTimeout( ()=> {
@@ -173,8 +206,9 @@ export default {
     }
   },
   destroyed(){},
-  watch:{
-    
+  beforeRouteLeave (to, from, next) {
+    this.$dialog.close();
+    next();
   },
 }
 </script>

@@ -1,9 +1,13 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Vuex from 'vuex';
+import store from './store';
 
 Vue.use(VueRouter);
-Vue.use(Vuex);
+
+VueRouter.prototype.goBack = function() {
+    this.isBack = true
+    window.history.go(-1)
+}
 
 const router = new VueRouter({
 	// mode: 'history',
@@ -15,9 +19,9 @@ const router = new VueRouter({
 		},
 		{
 			path: '/',
-			name: 'main',
-			component: (resolve) => require(['./pages/main/index.vue'], resolve)
+			redirect: '/main-index/wallet'
 		},
+		// Create Wallet
 		{
 			path: '/create-index',
 			name: 'create-index',
@@ -38,18 +42,44 @@ const router = new VueRouter({
 			name: 'create-mnemonic',
 			component: (resolve) => require(['./pages/create/mnemonic.vue'], resolve)
 		},
-
+		// Import Wallet
 		{
 			path: '/import-index',
 			name: 'import-index',
 			component: (resolve) => require(['./pages/import/index.vue'], resolve)
 		},
-
+		// Home
 		{
 			path: '/main-index',
 			name: 'main-index',
-			component: (resolve) => require(['./pages/main/index.vue'], resolve)
+			component: (resolve) => require(['./pages/main/index.vue'], resolve),
+			children: [
+				{
+					path: '/main-index/wallet',
+					name: 'main-wallet',
+					component: (resolve) => require(['./pages/wallet/index.vue'], resolve)
+				},
+				{
+					path: '/main-index/news',
+					name: 'main-news',
+					component: (resolve) => require(['./pages/news/index.vue'], resolve),
+					meta: {
+						keepAlive: true
+					}
+				},
+				{
+					path: '/main-index/mine',
+					name: 'main-mine',
+					component: (resolve) => require(['./pages/mine/index.vue'], resolve)
+				}
+			]
 		},
+		{
+			path: '/qr',
+			name: 'qr',
+			component: (resolve) => require(['./components/qr-scanner.vue'], resolve)
+		},
+		// Wallet
 		{
 			path: '/wallet-index',
 			name: 'wallet-index',
@@ -66,18 +96,32 @@ const router = new VueRouter({
 			component: (resolve) => require(['./pages/wallet/receive.vue'], resolve)
 		},
 		{
+			path: '/wallet-add',
+			name: 'wallet-add',
+			component: (resolve) => require(['./pages/wallet/add.vue'], resolve)
+		},
+		{
+			path: '/wallet-coin-history',
+			name: 'wallet-coin-history',
+			component: (resolve) => require(['./pages/wallet/coin-history.vue'], resolve)
+		},
+		// News
+		{
 			path: '/news-index',
 			name: 'news-index',
-			component: (resolve) => require(['./pages/news/index.vue'], resolve),
-			meta:{
-				keepAlive : true
-			}
+			component: (resolve) => require(['./pages/news/index.vue'], resolve)
+		},
+		{
+			path: '/news-items',
+			name: 'news-items',
+			component: (resolve) => require(['./pages/news/items.vue'], resolve)
 		},
 		{
 			path: '/news-detail',
 			name: 'news-detail',
 			component: (resolve) => require(['./pages/news/detail.vue'], resolve)
 		},
+		// Mine
 		{
 			path: '/mine-index',
 			name: 'mine-index',
@@ -96,10 +140,7 @@ const router = new VueRouter({
 		{
 			path: '/mine-addrs',
 			name: 'mine-addrs',
-			component: (resolve) => require(['./pages/mine/addrs.vue'], resolve),
-			meta:{
-				keepAlive : false
-			}
+			component: (resolve) => require(['./pages/mine/addrs.vue'], resolve)
 		},
 		{
 			path: '/mine-addrInfo',
@@ -131,6 +172,7 @@ const router = new VueRouter({
 			name: 'mine-about',
 			component: (resolve) => require(['./pages/mine/about.vue'], resolve)
 		},
+		// Node
 		{
 			path: '/vote-index',
 			name: 'vote-index',
@@ -161,7 +203,50 @@ const router = new VueRouter({
 			name: 'vote-votecancel',
 			component: (resolve) => require(['./pages/vote/votecancel.vue'], resolve)
 		}
+		// // Governance
+		// {
+		// 	path: '/governance-index',
+		// 	name: 'governance-index',
+		// 	component: (resolve) => require(['./pages/governance/index.vue'], resolve)
+		// },
+		// {
+		// 	path: '/governance-committeeRegister',
+		// 	name: 'governance-committeeRegister',
+		// 	component: (resolve) => require(['./pages/governance/committeeRegister.vue'], resolve)
+		// },
+		// {
+		// 	path: '/governance-proposal',
+		// 	name: 'governance-proposal',
+		// 	component: (resolve) => require(['./pages/governance/proposal.vue'], resolve)
+		// },
+		// // Register
+		// {
+		// 	path: '/register-index',
+		// 	name: 'register-index',
+		// 	component: (resolve) => require(['./pages/register/index.vue'], resolve)
+		// },
+		// // Token
+		// {
+		// 	path: '/token-index',
+		// 	name: 'token-index',
+		// 	component: (resolve) => require(['./pages/token/index.vue'], resolve)
+		// }
 	]
 });
+
+router.afterEach((to, from) => {
+	if (store.state.isplusReady) {
+		if (to.path == "/main-index/wallet" || to.path == '/main-index/mine') {
+			plus.navigator.setStatusBarStyle('light');
+			plus.navigator.setStatusBarBackground('#317DC0');
+		} else if (to.path == "/qr") {
+			plus.navigator.setStatusBarStyle('light');
+			plus.navigator.setStatusBarBackground('#1D1D1D');
+		} else {
+			plus.navigator.setStatusBarStyle("dark");
+			plus.navigator.setStatusBarBackground("#FFFFFF");
+		}
+	}
+})
 
 export default router;

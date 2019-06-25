@@ -11,19 +11,19 @@
 </style>
 <template>
   <div id="mine-addrs">
-    <van-nav-bar :title="$t('mine.addrs.navTitle')" fixed left-text="" left-arrow @click-left="onClickLeft" @click-right="onClickRight">
+    <van-nav-bar :z-index="1000" :title="$t('mine.addrs.navTitle')" fixed left-text="" left-arrow @click-left="onClickLeft" @click-right="onClickRight">
       <van-icon name="add-o" slot="right" />
     </van-nav-bar>
 
     <scroller class="container fixed-container" :on-refresh="refresh" :refreshText="$t('main.refresh')" :noDataText="$t('main.noMoreData')" ref="myscroller">
       <div class="text-center f666" v-if="noAddrs">
-        <img class="nodata" src="http://lbtc.io/wallet/static/img/nodata.png">
+        <img class="nodata" src="https://lbtc.io/wallet/static/img/nodata.png">
         {{$t('mine.addrs.msg1')}} <a href="#/mine-addrInfo">{{$t('mine.addrs.msg2')}}</a>
       </div>
       <div class="addrs-content" v-if="!noAddrs">
         <div class="addrs-item" v-for="(item, index) in addrs" @click="toAddrInfo(item)">
           <div class="addrs-item-name ellipsis">{{item.name}}</div>
-          <div class="addrs-item-addr ellipsis">{{item.addr}}</div>
+          <div class="addrs-item-addr ellipsis hash">{{item.addr}}</div>
           <div class="addrs-item-other ellipsis">{{item.other}}</div>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default {
     },
 
     onClickLeft() {
-      this.$router.push({ path: '/main-index' });
+      this.$router.replace({ path:'/main-index/mine' });
     },
 
     onClickRight() {
@@ -86,10 +86,6 @@ export default {
         done();
       }, 1000);
     }
-  },
-  destroyed(){
-
-  },
-  watch:{},
+  }
 }
 </script>

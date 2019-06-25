@@ -1,5 +1,6 @@
 export default {
     commom: {
+        quit: '再次点击退出',
         tx: {
             confirmInfoTX: '交易详情',
             confirmInfoType: '交易类型',
@@ -12,17 +13,27 @@ export default {
             dialogConfirm: '确定',
             dialogTxID: '交易ID',
             dialogCopy: '复制',
-            msg1: '不能为空',
-            msg2: '长度不能超过32个字节',
-            msg3: '正在注册...',
-            msg4: '余额不足',
-            msg5: '密码错误',
-            msg6: '正在打包...',
-            msg7: '正在发送...',
-            msg8: '发送成功，等待入块',
-            msg9: '已复制',
-            msg10: '复制错误',
-            selectAgent: '请选择代理人'
+            notEmpty: '不能为空',
+            tooLong32: '长度不能超过32个字节',
+            reging: '正在注册...',
+            insufficient: '余额不足',
+            insufficientFee: '交易费不足',
+            incorrect: '密码错误',
+            packing: '正在打包...',
+            sending: '正在发送...',
+            success: '发送成功，等待入块',
+            notConfirmed: '上笔交易还未确认',
+            copied: '已复制',
+            copyError: '复制错误',
+            selectAgent: '请选择代理人',
+            scan: '扫码',
+            qrWarn: '此设备不支持',
+            unablePic: '无法识别此图片',
+            noQrcode: '不是二维码',
+            scanAgain: '重新扫码',
+            openGallery: '打开图库',
+            gallery: '图库',
+            merginWallet: '正在合并钱包'
         },
         passDialog: {
             dialogTitle: '请输入钱包密码',
@@ -44,6 +55,34 @@ export default {
             version: '1.0.1',
             content: [
                 '修改已知Bug'
+            ]
+        },
+        {
+            version: '1.0.2',
+            content: [
+                '新版UI',
+                '优化用户体验',
+                '修改已知Bug'
+            ]
+        },
+        {
+            version: '1.0.3',
+            content: [
+                '修改部分图片显示异常',
+                '部分代码优化'
+            ]
+        },
+        {
+            version: '1.0.4',
+            content: [
+                '增加发送全部',
+                '增加扫码',
+                '增加错误日志',
+                '显示Fee',
+                '显示确认中交易',
+                '降低交易Fee',
+                '修改已知Bug',
+                '优化用户体验'
             ]
         }
     ],
@@ -121,6 +160,7 @@ export default {
         cancelButtonText: '取消',
         refresh: '下拉刷新',
         infinite: '加载更多',
+        loading: '加载中...',
         noMoreData: '没有更多数据',
         noData: '暂无数据'
     },
@@ -130,7 +170,9 @@ export default {
             currentVersion: '当前版本',
             about: '闪电钱包是一款专为闪电比特币（LBTC）打造的移动端轻钱包App，目前仅支持LBTC转账、节点投票功能，旨在为LBTC用户提供一款安全放心，简单好用的数字资产钱包应用。',
             term: '服务条款',
-            log: '版本日志',
+            versionLog: '版本日志',
+            errorLog: '错误日志',
+            network: '网络',
             checkVersion: '检测新版',
             popupNavTitle1: '服务条款及隐私政策',
             popupNavTitle2: '版本日志',
@@ -214,12 +256,12 @@ export default {
             ]
         },
         index: {
-            title1: '钱包管理',
-            title2: '交易记录',
-            title3: '地址簿',
-            title4: '系统设置',
-            title5: '帮助中心',
-            title6: '关于我们'
+            manager: '钱包管理',
+            his: '交易记录',
+            addrs: '地址簿',
+            set: '系统设置',
+            help: '帮助中心',
+            about: '关于我们'
         },
         manage: {
             navTitle: '钱包管理'
@@ -232,6 +274,8 @@ export default {
             changePass: '修改密码',
             exportPrv: '导出私钥',
             packupMnem: '备份助记词',
+            confirmResync: '确认重新同步',
+            resync: '重新同步',
             deleWallet: '删除钱包',
             copy: '复制',
             popupNavTitle: '修改密码',
@@ -261,6 +305,7 @@ export default {
         },
         txHis: {
             navTitle: '交易记录',
+            confirming: '正在确认',
             title: '最近交易记录',
             msg1: '无交易记录',
             msg2: '获取成功',
@@ -278,9 +323,58 @@ export default {
             title8: '复制出错'
         }
     },
+    news: {
+        topLevelChannel: {
+            news: '新闻资讯',
+            lbtc: 'LBTC'
+        },
+        secondLevelChannel: {
+            news: [
+                {
+                    name: '全部',
+                    class: 'newsAll'
+                },
+                {
+                    name: 'LBTC',
+                    class: 'lbtcnews'
+                },
+                {
+                    name: '行业',
+                    class: 'information'
+                },
+                {
+                    name: '收藏',
+                    class: 'collection'
+                }
+            ],
+            lbtc: [
+                {
+                    name: '全部',
+                    class: 'lbtcAll'
+                },
+                {
+                    name: '周报月报',
+                    class: 'report'
+                },
+                {
+                    name: '公告',
+                    class: 'announcement'
+                },
+                {
+                    name: '教程',
+                    class: 'tutorial'
+                },
+                {
+                    name: '干货',
+                    class: 'article'
+                }
+            ]
+        }
+    },
     vote: {
         index: {
             navTitle: 'LBTC节竞选',
+            delegateName: '代理人名称 : ',
             item1: '查看投票',
             item1Msg1: '被投',
             item1Msg2: '已投',
@@ -302,7 +396,7 @@ export default {
             balance: '余额',
             namePlaceholder: '请输入名称',
             warnMsg: '注册需要花费1LBTC',
-            next: '下一步'
+            next: '注册'
         },
         vote: {
             navTitle: '代理人列表',
@@ -323,10 +417,10 @@ export default {
             button2: '撤销投票'
         },
         voters: {
-            navTitle: '已投节点'
+            navTitle: '被投地址'
         },
         votes: {
-            navTitle: '被投地址'
+            navTitle: '已投节点'
         }
     },
     wallet: {
@@ -339,7 +433,7 @@ export default {
             payMoney: '转账金额',
             balance: '余额',
             moneyInputPlaceholder: '输入金额',
-            next: '下一步',
+            next: '转账',
             selectionAddr: '选择联系人',
             noAddrContent: '暂无联系人，请',
             noAddrAddAddr: '添加联系人' ,
@@ -349,14 +443,21 @@ export default {
             checkWarnMsg4: '金额超出余额',
             checkWarnMsg5: '金额太小',
             checkWarnMsg6: '不能超过8位小数',
+            checkWarnMsg7: '地址不能相同'
         },
         index: {
+            assets: '资产',
+            myAssets: '我的资产',
             backup: '未备份',
             availablebalance: '可用',
             unavailablebalance: '不可用',
-            tabName1: '转账',
-            tabName2: '收款',
-            tabName3: '投票',
+            tabSend: '转账',
+            tabNode: '节点',
+            tabGovernance: '治理',
+            tabRegister: '注册',
+            tabToken: 'Token',
+            tabReceive: '收款',
+            tabVote: '投票',
             moreHisContent: '此处最多显示10条，点击',
             moreHisButton: '查看更多',
             walletListTitle: '我的钱包'
@@ -367,6 +468,65 @@ export default {
             copyToClipboard: '复制到剪贴板',
             msg1: '已复制',
             msg2: '复制错误'
+        },
+        add:{
+            navTitle: '添加资产',
+            noticeTittle: '提示',
+            noticeContent: '确定添加？',
         }
+    },
+    governance: {
+        index: {
+            navTitle:'LBTC链上治理',
+            itemResCommittee: '注册为理事会成员',
+            itemVoteCommittee: '票选理事会候选人',
+            itemCancelCommittee: '撤销理事会候选人投票',
+            itemProposal: '发起议案',
+            itemVoteProposal: '给议案投票'
+        },
+        committeeRegister: {
+            navTitle: '注册为理事会成员',
+            enterURL: '请输入URL',
+            confirmInfoTxType: '理事会注册',
+        },
+        proposal: {
+            navTitle: '发起议案',
+            submitAddr: '发起地址',
+            title: '标题',
+            titlePlaceholder: '请输入标题',
+            detail: '详情',
+            detailPlaceholder: '请输入详情',
+            url: 'URL',
+            urlPlaceholder: '请输入URL',
+            time: '截止时间',
+            timePlaceholder: '请输入截止时间',
+            timeSuffix: '天后',
+            option: '选项',
+            submitProposal: '发起议案',
+            feeMsg: '发起议案需要花费3LBTC',
+        }
+    },
+    register: {
+        navTitle: '注册用户名',
+        addr: '地址',
+        userName: '用户名',
+        userNamePlaceholder: '3到16位，支持字母,数字及下划线组合',
+        point: 'PS：',
+        confirmInfoTxType: '注册',
+        next: '注册'
+    },
+    token: {
+        navTitle: '创建Token',
+        userName: '用户名',
+        tokenLongName: '代币全称',
+        tokenShortName: '代币简称',
+        total: '发行总量',
+        point: '小数位数',
+        createAddress: '创建地址',
+        tokenAddress: '发币地址',
+        next: '下一步',
+        warnHelp: '了解详情',
+        warnFees: '费用 10LBTC',
+        confirmInfoTxType: '创建代币'
     }
 };

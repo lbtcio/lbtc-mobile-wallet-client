@@ -1,4 +1,15 @@
 node_modules/
-dist/
 .DS_Store
 .vscode
+dist/
+/news.ini
+/src/pages/governance
+/src/pages/wallet/add.vue
+/src/pages/register
+/src/proto
+/src/pages/token
+/package-lock.json
+/yarn.lock
+/.project
+/debug.log
+/package-lock.json

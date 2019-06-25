@@ -5,6 +5,8 @@
     height: 100%;
   }
   .term-content {
+    height: 100vh;
+    overflow-y: auto;
     p {
       font-size: 12px;
       letter-spacing: .5px;
@@ -14,11 +16,11 @@
 </style>
 <template>
   <div id="create-create">
-    <van-nav-bar
+    <van-nav-bar :z-index="1000" 
       :title='$t("create.create.navTitle")'
       left-arrow 
       fixed 
-      @click-left="onClickLeft"
+      @click-left="$router.goBack()"
     />
 
     <div class="container fixed-container">
@@ -53,7 +55,7 @@
     </div>
     
     <van-popup v-model="openTerms" position="right">
-      <van-nav-bar
+      <van-nav-bar :z-index="1000" 
         :title="$t('create.create.termTitle')"
         left-arrow
         fixed 
@@ -68,7 +70,6 @@
 
 <script>
 import { Toast } from "vant";
-import wConfig from "../../factory/wallet/config.js"
 
 export default {
   components: {},
@@ -109,7 +110,7 @@ export default {
   mounted() {},
   methods: {
     createInit() {
-      this.termContent = wConfig.terms;
+      this.termContent = this.wConfig.terms;
       this.localforage.getItem("wallet_list").then(res => {
         if (res) {
           this.wallet_list = res;
@@ -117,10 +118,6 @@ export default {
           this.wallet_list = {};
         }
       })
-    },
-
-    onClickLeft() {
-      this.$router.back();
     },
 
     nameChange(e) {
@@ -169,9 +166,7 @@ export default {
     },
 
     checkWalletListLen() {
-      let arr = Object.keys(this.wallet_list);
-
-      if (arr.length > 4) {
+      if (this.walletDB.addresses.length > 4) {
         Toast.fail({
           duration: 1500,
           message: this.$t('create.create.sumMsg')
@@ -183,7 +178,6 @@ export default {
     },
 
     createWallet() {
-
       if (!this.checkWalletListLen()) {
         return false;
       }
@@ -203,71 +197,29 @@ export default {
         });
         window.setTimeout( ()=> {
 
-          this.Wallet.generateMnemonic()
-            .then(mnemonic => {
-              return Promise.resolve(
-                this.Wallet.createWalletFromMnemonic(mnemonic)
-              );
+          let mnemonic = this.Wallet.generateMnemonic();
+          let walletInfo = this.Wallet.createWalletFromMnemonic(mnemonic);
 
-            })
-            .then(walletInfo => {
+          this.lbtcWalletDB.insertaccount(
+            walletInfo.address,
+            walletInfo.avatar,
+            this.name.value,
+            this.password.value,
+            walletInfo.mnemonicWord,
+            walletInfo.privateKey,
+            walletInfo.network,
+            false,
+            1
+          )
 
-              walletInfo.name = this.name.value;
-              walletInfo.psw = this.password.value;
-              walletInfo.ispackup = false;
-              this.wallet_list[walletInfo.addr] = walletInfo;
-              this.walletInfo = walletInfo;
-              return Promise.resolve(this.wallet_list);
+          this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then(r => {
+            Toast.clear();
+            this.$router.push({ path: "/create-packup", query: {addr: walletInfo.address} });
+          })
 
-            })
-            .then(wallet_list => {
-
-              let txsDetails = {
-                current_height: 0,
-                txsList: []
-              };
-              let UnSpent = {
-                available: [],
-                availablebalance: 0,
-                unavailable: [],
-                unavailablebalance: 0,
-                totalbalance: 0
-              };
-
-              this.$store.commit('saveHomeState', {
-                save_wallet_list: wallet_list,
-                save_current_wallet: this.walletInfo.addr,
-                save_wallet_info: this.walletInfo,
-                save_txsDetails: txsDetails,
-                save_UnSpent: UnSpent,
-                save_moreStatus: false,
-                save_nodata: true
-              });
-
-              Promise.all([
-                this.localforage.setItem("wallet_list", wallet_list),
-                this.localforage.setItem("current_mnem", this.walletInfo.mnemonic),
-                this.localforage.setItem("current_wallet", this.walletInfo.addr),
-                this.localforage.setItem(this.walletInfo.addr + "+unspent", UnSpent),
-                this.localforage.setItem(this.walletInfo.addr + "+txsDetails", txsDetails),
-              ]).then(data => {
-                if (data) {
-                  Toast.clear();
-                  this.$router.push({ path: "/create-packup" });
-                }
-              });
-            })
-            .catch(error => {
-              Toast({
-                duration: 1500,
-                message: error
-              })
-            });
         }, 200);
       }
     }
-  },
-  destroyed() {},
-  watch: {}
+  }
 };
 </script>

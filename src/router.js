@@ -128,11 +128,6 @@ const router = new VueRouter({
 			component: (resolve) => require(['./pages/mine/index.vue'], resolve)
 		},
 		{
-			path: '/mine-tx-his',
-			name: 'mine-tx-his',
-			component: (resolve) => require(['./pages/mine/tx-his.vue'], resolve)
-		},
-		{
 			path: '/mine-tx-hisInfo',
 			name: 'mine-tx-hisInfo',
 			component: (resolve) => require(['./pages/mine/tx-hisInfo.vue'], resolve)

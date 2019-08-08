@@ -31,6 +31,7 @@
     padding-top: 32px;
     .swiper-slide {
       overflow-y: scroll;
+      -webkit-overflow-scrolling: touch;
       &::-webkit-scrollbar {
         display: none;
       }
@@ -72,7 +73,7 @@ export default {
       swiperOption: {
         notNextTick: true,
         initialSlide: 0,
-        resistanceRatio: 0,
+        resistanceRatio: 0.65,
         on: {
           sliderMove: () => {
             this.$store.commit('setIsSwiper', true);

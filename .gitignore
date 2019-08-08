@@ -5,7 +5,6 @@ dist/
 /news.ini
 /src/pages/governance
 /src/pages/wallet/add.vue
-/src/pages/register
 /src/proto
 /src/pages/token
 /package-lock.json
@@ -13,3 +12,5 @@ dist/
 /.project
 /debug.log
 /package-lock.json
+/old-dist
+/src/pages/register

@@ -8,6 +8,7 @@ export default {
             confirmInfoReceiveAddr: '收款地址',
             confirmInfoSendMoney: '转出金额',
             confirmInfoName: '代理人名称',
+            confirmNickname: '昵称',
             confirmInfoFees: '矿工费用',
             dialogError: '错误',
             dialogConfirm: '确定',
@@ -151,9 +152,9 @@ export default {
         msg4: '非法私钥'
     },
     main: {
-        tabName1: '钱包',
-        tabName2: '资讯',
-        tabName3: '我的',
+        wallet: '钱包',
+        news: '资讯',
+        mine: '我的',
         updataTitle: '提示',
         updataMessage: '版本太低，请更新',
         confirmButtonText: '更新',
@@ -198,7 +199,8 @@ export default {
             msg8: '刪除成功',
             msg9: '刪除失败',
             dialogTitle: '提示',
-            dialogContent: '确定要刪除此地址？'
+            dialogContent: '确定要刪除此地址？',
+            warnMsg: '未注册昵称显示"默认"'
         },
         addrs: {
             navTitle: '地址簿',
@@ -427,9 +429,15 @@ export default {
         send: {
             navTitle: '转账',
             confirmInfoTxType: '转账',
-            payAddr: '付款钱包',
+            optional: '选填',
+            payAddr: '付款地址',
+            payee: '收款人',
+            payeeNickname: '收款人昵称',
+            payeeAddress: '收款人地址',
+            payeeNicknamePlaceholder: '请输入收款人昵称(将自动获取地址)',
+            payeeAddressPlaceholder: '请输入收款人钱包地址',
             receiveAddr: '收款地址',
-            receiveAddrPlaceholder: '请输入收款人钱包地址',
+            receiveAddrPlaceholder: '请输入收款人钱包地址或者昵称',
             payMoney: '转账金额',
             balance: '余额',
             moneyInputPlaceholder: '输入金额',
@@ -437,13 +445,14 @@ export default {
             selectionAddr: '选择联系人',
             noAddrContent: '暂无联系人，请',
             noAddrAddAddr: '添加联系人' ,
-            checkWarnMsg1: '地址不能为空',
+            checkWarnMsg1: '不能为空',
             checkWarnMsg2: '地址错误',
             checkWarnMsg3: '无效金额',
             checkWarnMsg4: '金额超出余额',
             checkWarnMsg5: '金额太小',
             checkWarnMsg6: '不能超过8位小数',
-            checkWarnMsg7: '地址不能相同'
+            checkWarnMsg7: '地址不能相同',
+            checkWarnMsg8: '昵称错误'
         },
         index: {
             assets: '资产',
@@ -507,13 +516,14 @@ export default {
         }
     },
     register: {
-        navTitle: '注册用户名',
+        navTitle: '注册昵称',
         addr: '地址',
-        userName: '用户名',
-        userNamePlaceholder: '3到16位，支持字母,数字及下划线组合',
-        point: 'PS：',
-        confirmInfoTxType: '注册',
-        next: '注册'
+        nickname: '昵称',
+        nicknamePlaceholder: '请输入名称',
+        warnMsg: '昵称不能超过32个字节',
+        confirmInfoTxType: '注册昵称',
+        register: '注册',
+        registered: '已注册'
     },
     token: {
         navTitle: '创建Token',

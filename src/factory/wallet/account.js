@@ -50,12 +50,13 @@ class WalletDB {
         break
       }
     }
-    if (this.current == address && this.addresses.length) {
-      if (this.addresses.length) {
+
+    if (this.addresses.length) {
+      if (this.current == address) {
         this.current = this.addresses[0];
-      } else {
-        this.current = '';
       }
+    } else {
+      this.current = '';
     }
   }
 
@@ -74,7 +75,18 @@ class WalletDB {
           }
         }
       }
-      
+
+      for (let index1 = 0; index1 < currentHistory.length; index1++) {
+        const item1 = currentHistory[index1];
+        for (let index2 = 0; index2 < this.accounts[address].history.length; index2++) {
+          const item2 = this.accounts[address].history[index2];
+          if (item2.hash == item1.hash) {
+            currentHistory.splice(index1, 1);
+            index1 = index1 - 1;
+          }
+        }
+      }
+
       this.accounts[address].history = currentHistory.concat(this.accounts[address].history);
       let unSpent = Wallet.addListUnSpent(currentHistory, address, currentHeight, {
         availableTxs: this.accounts[address].availableTxs,
@@ -86,7 +98,7 @@ class WalletDB {
       this.accounts[address].availableTxs = unSpent.availableTxs;
       this.accounts[address].availableBalance = unSpent.availableBalance;
       this.accounts[address].unavailableTxs = unSpent.unavailableTxs;
-      this.accounts[address].unavailableBalance = unSpent.unavailableBalance
+      this.accounts[address].unavailableBalance = unSpent.unavailableBalance;
     }
   }
 

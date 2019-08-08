@@ -117,6 +117,7 @@
         <div v-for="item in localeLog" v-if="localeLog.length">
           <p>{{item.time}}</p>
           <ul>
+            <li v-if="item.number">Number: {{item.number}}</li>
             <li v-if="item.status">Status: {{item.status}}</li>
             <li v-if="item.statusText">StatusText: {{item.statusText}}</li>
             <li v-if="item.url">URL: {{item.url}}</li>

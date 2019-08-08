@@ -14,8 +14,15 @@
 <script>
 export default {
   name: "home",
-  mounted() {
-    
+  created() {
+    let ifGuide = localStorage.getItem("guide");
+    let toURL = "";
+    if (ifGuide) {
+      toURL = "/";
+    } else {
+      toURL = "/guide";
+    }
+    this.$router.push({ path: toURL });
   }
 };
 </script>

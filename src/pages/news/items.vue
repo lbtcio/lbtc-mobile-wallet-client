@@ -28,9 +28,9 @@
 <template>
   <div class="news-items" :class="value" v-infinite-scroll="loadBottom" infinite-scroll-disabled="bottomLock" infinite-scroll-distance="50" infinite-scroll-immediate-check="false">
 
-    <mt-loadmore style="overflow: visible;" :top-method="loadTop" :distance="isSwiper" :auto-fill="false" :topPullText="$t('main.refresh')" :topDropText="$t('main.refresh')" :topLoadingText="$t('main.loading')" ref="loadmore">
+    <mt-loadmore :top-method="loadTop" :distance="isSwiper" :auto-fill="false" :topPullText="$t('main.refresh')" :topDropText="$t('main.refresh')" :topLoadingText="$t('main.loading')" ref="loadmore">
         
-      <div class="text-center f666" v-if="!items.length">
+      <div class="text-center f666" v-if="!items.length" style="height: 60vh">
         <img class="nodata" src="https://lbtc.io/wallet/static/img/nodata.png">
         {{$t('main.noData')}}
       </div>

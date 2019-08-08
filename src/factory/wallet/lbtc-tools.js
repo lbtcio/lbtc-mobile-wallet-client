@@ -296,7 +296,7 @@ LBTCtools.VoteForgedNode = function (addrs,opCode) {
 
 
 // Reg Board Members (Not tested)
-LBTCtools.RegBoardMembers = function (name,url) {
+LBTCtools.RegNickname = function (name,url) {
     if (arguments.length !== 2){
         return "arguments error!";
     }

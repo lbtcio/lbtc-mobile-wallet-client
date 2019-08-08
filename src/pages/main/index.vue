@@ -1,6 +1,5 @@
 <style lang="scss" scoped>
-#main-index {
-}
+
 </style>
 <template>
   <div id="main-index" v-if="walletDB && walletDB.current">
@@ -12,7 +11,7 @@
 
     <van-tabbar v-model="active">
       <van-tabbar-item to="/main-index/wallet">
-        <span>{{$t('main.tabName1')}}</span>
+        <span>{{$t('main.wallet')}}</span>
         <img
           slot="icon"
           slot-scope="props"
@@ -20,7 +19,7 @@
         >
       </van-tabbar-item>
       <van-tabbar-item to="/main-index/news">
-        <span>{{$t('main.tabName2')}}</span>
+        <span>{{$t('main.news')}}</span>
         <img
           slot="icon"
           slot-scope="props"
@@ -28,7 +27,7 @@
         >
       </van-tabbar-item>
       <van-tabbar-item to="/main-index/mine">
-        <span>{{$t('main.tabName3')}}</span>
+        <span>{{$t('main.mine')}}</span>
         <img
           slot="icon"
           slot-scope="props"
@@ -64,11 +63,11 @@ export default {
   computed: {},
   beforeCreate() {},
   created() {
-    this.localforage.getItem("walletDB").then(res => {
-      if (!res) {
+    window.setTimeout(() => {
+      if (!this.walletDB.current) {
         this.$router.push({ path: "/create-index" });
       }
-    });
+    }, 200)
     this.swithPath(this.$route.path);
   },
   mounted() {

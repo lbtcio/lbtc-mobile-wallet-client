@@ -123,10 +123,7 @@
           {{sendSuccess}}
         </div>
       </div>
-      <div class="dialog-button default-color text-center" 
-        v-clipboard:copy="sendSuccess" 
-        v-clipboard:success="onCopy" 
-        v-clipboard:error="onError">
+      <div class="dialog-button default-color text-center" @click="doCopy(sendSuccess)">
         {{$t('commom.tx.dialogCopy')}}
       </div>
     </van-dialog>
@@ -330,19 +327,49 @@ export default {
       this.sendError = '';
     },
 
-    onCopy() {
-      Toast.success({
-        duration: 1500,
-        message: this.$t('commom.tx.copied')
-      });
-    },
+    doCopy(e) {
+      // is app
+      if (window.plus && this.isplusReady) {
+        this.appClipbordText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      // is h5
+      } else {
+        this.$copyText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      }
+    }
 
-    onError() {
-      Toast.fail({
-        duration: 1500,
-        message: this.$t('commom.tx.copyError')
-      });
-    },
+    // onCopy() {
+    //   Toast.success({
+    //     duration: 1500,
+    //     message: this.$t('commom.tx.copied')
+    //   });
+    // },
+
+    // onError() {
+    //   Toast.fail({
+    //     duration: 1500,
+    //     message: this.$t('commom.tx.copyError')
+    //   });
+    // },
 
   }
 }

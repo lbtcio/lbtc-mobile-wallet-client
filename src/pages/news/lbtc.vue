@@ -30,6 +30,7 @@
     z-index: 0;
     padding-top: 32px;
     .swiper-slide {
+      -webkit-overflow-scrolling: touch;
       overflow-y: scroll;
       &::-webkit-scrollbar {
         display: none;
@@ -51,7 +52,7 @@
 
     <swiper :options="swiperOption" class="swiper-box" ref="myLbtcSwiper">
       <swiper-slide v-for='(item, index) in lbtcChannels' :key='index'>
-          <component is="items" v-model="item.class"></component>
+          <component class="items" is="items" v-model="item.class"></component>
       </swiper-slide>
     </swiper>
     
@@ -72,7 +73,7 @@ export default {
       swiperOption: {
         notNextTick: true,
         initialSlide: 0,
-        resistanceRatio: 0,
+        resistanceRatio: 0.65,
         on: {
           sliderMove: () => {
             this.$store.commit('setIsSwiper', true)

@@ -22,8 +22,11 @@ import WalletDB from './factory/wallet/account'
 import VueClipboard from 'vue-clipboard2';
 import VueScroller from 'vue-scroller';
 import localforage from 'localforage';
-import VueSwiper from 'vue-awesome-swiper'
-import 'swiper/dist/css/swiper.css'
+import VueSwiper from 'vue-awesome-swiper';
+import 'swiper/dist/css/swiper.css';
+
+import FastClick from 'fastclick'
+FastClick.attach(document.body);
 
 // CSS
 import '../static/theme/common.css';
@@ -74,6 +77,10 @@ const app = new Vue({
     wallet,
     async created() {
         await this.initWalletDB();
+        if (store.state.isplusReady) {
+            plus.navigator.setStatusBarStyle('light');
+            plus.navigator.setStatusBarBackground('#317DC0');
+        }
     },
     methods: {
         initWalletDB() {
@@ -104,7 +111,7 @@ document.addEventListener('plusready', function () {
     let now = false;
     let time = null;
     plus.key.addEventListener('backbutton', function () {
-        if (app.$route.path.indexOf('/main-index') >= 0) {
+        if (app.$route.path.indexOf('/main-index') >= 0 || app.$route.path.indexOf('/create-index') >= 0) {
             time = null;
             if (now) {
                 now = false;
@@ -120,13 +127,4 @@ document.addEventListener('plusready', function () {
             router.back();
         }
     })
-})
-
-let ifGuide = localStorage.getItem('guide');
-let toURL = '';
-if (ifGuide) {
-  toURL = '/';
-} else {
-  toURL = '/guide';
-}
-router.push({ path: toURL });
+});

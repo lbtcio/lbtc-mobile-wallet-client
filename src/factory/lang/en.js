@@ -8,6 +8,7 @@ export default {
             confirmInfoReceiveAddr: "Receiver's Address",
             confirmInfoSendMoney: 'Amount',
             confirmInfoName: 'Delegate Name',
+            confirmNickname: 'Nick Name',
             confirmInfoFees: 'Mining Fee',
             dialogError: 'Error',
             dialogConfirm: 'Confirm',
@@ -151,9 +152,9 @@ export default {
         msg4: 'Invalid Private Key'
     },
     main: {
-        tabName1: 'Wallet',
-        tabName2: 'News',
-        tabName3: 'My',
+        wallet: 'Wallet',
+        news: 'News',
+        mine: 'My',
         updataTitle: 'Hint',
         updataMessage: 'The version is too low, please update',
         confirmButtonText: 'Update',
@@ -198,7 +199,8 @@ export default {
             msg6: 'Deleted',
             msg7: 'Failed',
             dialogTitle: 'Hint',
-            dialogContent: 'Delete this address?'
+            dialogContent: 'Delete this address?',
+            warnMsg: 'Unregistered nickname, show "Default"'
         },
         addrs: {
             navTitle: 'Contacts',
@@ -427,23 +429,30 @@ export default {
         send: {
             navTitle: 'Send',
             confirmInfoTxType: 'Send',
-            payAddr: 'Payment wallet',
+            optional: 'Optional',
+            payAddr: 'Payment Address',
+            payee: 'Payee',
+            payeeNickname: 'Payee Nickname',
+            payeeAddress: 'Payee Address',
+            payeeNicknamePlaceholder: 'Please enter the payee nickname(Automatically get the address)',
+            payeeAddressPlaceholder: 'Please enter the payee address',
             receiveAddr: "Receiver's Address",
-            receiveAddrPlaceholder: "Please enter the  receiver's address",
+            receiveAddrPlaceholder: "Please enter the  receiver's address or nick name",
             payMoney: 'Amount',
             balance: 'Balance',
-            moneyInputPlaceholder: 'Amount',
+            moneyInputPlaceholder: 'Input Amount',
             next: 'Send',
             selectionAddr: 'Select contact',
             noAddrContent: 'No contact, please',
             noAddrAddAddr: 'Add contact',
-            checkWarnMsg1: 'Address cannot be empty',
+            checkWarnMsg1: 'Cannot be empty',
             checkWarnMsg2: 'Address wrong',
             checkWarnMsg3: 'Invalid amount',
             checkWarnMsg4: 'Amount in excess of balance',
             checkWarnMsg5: 'The amount is too small',
             checkWarnMsg6: 'No more than 8 decimal places',
-            checkWarnMsg7: 'Address cannot be the same'
+            checkWarnMsg7: 'Address cannot be the same',
+            checkWarnMsg8: 'Nickname wrong'
         },
         index: {
             assets: 'Assets',
@@ -507,14 +516,15 @@ export default {
         }
     },
     register: {
-        navTitle: 'Register Username',
-        confirmInfoTxType: 'Register username',
+        navTitle: 'Register Nickname',
+        confirmInfoTxType: 'Register Nickname',
         addr: 'Address',
-        userName: 'Username',
-        userNamePlaceholder: '3 to 16 digits, letters, numbers and underline',
-        point: 'PS：',
-        confirmInfoTxType: 'Register',
-        next: 'Register'
+        nickname: 'Nickname',
+        nicknamePlaceholder: 'Please enter Nickname',
+        warnMsg: 'Register name length larger than 32 bytes',
+        confirmInfoTxType: 'Register Nick Name',
+        register: 'Register',
+        registered: 'Registered'
     },
     token: {
         navTitle: 'Create Token',

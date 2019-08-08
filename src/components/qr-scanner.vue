@@ -1,5 +1,7 @@
 <style lang="scss">
 #qr-scanner {
+  background-color: #1D1D1D;
+  height: 100vh;
   .van-nav-bar {
     background-color: transparent;
     .van-icon {
@@ -18,9 +20,11 @@
   #bcid {
     width: 100%;
     position: absolute;
-    top: 0px;
+    top: 42px;
     bottom: 0px;
     text-align: center;
+    z-index: 0;
+    background-color: transparent;
     .tip {
       color: #ffffff;
     }
@@ -41,10 +45,10 @@
 
 <template>
   <div id="qr-scanner">
-    <van-nav-bar :z-index="1000" :title="$t('commom.tx.scan')" left-arrow @click-left="$router.goBack()" />
+    <van-nav-bar :z-index="9999" :title="$t('commom.tx.scan')" left-arrow @click-left="$router.goBack()" />
 
-    <div id="bcid" style="background-color: #1d1d1d;">
-      <div style="height:40%"></div>
+    <div id="bcid" style="">
+      <div style="height:35%"></div>
       <p class="tip" v-if="warn">{{warn}}</p>
     </div>
 

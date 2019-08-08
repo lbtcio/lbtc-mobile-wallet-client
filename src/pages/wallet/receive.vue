@@ -56,7 +56,7 @@
       <div class="addr-addr">{{walletDB.current}}</div>
 
       <div class="input-group">
-        <button class="yellow" v-clipboard:copy="walletDB.current" v-clipboard:success="onCopy" v-clipboard:error="onError">{{$t('wallet.receive.copyToClipboard')}}</button>
+        <button class="yellow" @click="doCopy(walletDB.current)">{{$t('wallet.receive.copyToClipboard')}}</button>
       </div>
     </div>
   </div>
@@ -81,6 +81,37 @@ export default {
     onClickRight() {
       return
     },
+
+    doCopy(e) {
+      // is app
+      if (window.plus && this.isplusReady) {
+        this.appClipbordText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      // is h5
+      } else {
+        this.$copyText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      }
+    },
+
     onCopy(e) {
       Toast.success({
         duration: 1500,

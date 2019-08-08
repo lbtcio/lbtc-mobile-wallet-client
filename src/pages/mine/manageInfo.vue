@@ -191,7 +191,7 @@
           {{content}}
         </div>
       </div>
-      <div class="dialog-button default-color text-center" v-clipboard:copy="content" v-clipboard:success="onCopy" v-clipboard:error="onError">
+      <div class="dialog-button default-color text-center" @click="doCopy(content)">
         {{$t('mine.manageInfo.copy')}}
       </div>
     </van-dialog>
@@ -385,19 +385,49 @@ export default {
 
     },
 
-    onCopy() {
-      Toast.success({
-        duration: 1500,
-        message: this.$t('mine.manageInfo.msg4')
-      });
+    doCopy(e) {
+      // is app
+      if (window.plus && this.isplusReady) {
+        this.appClipbordText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      // is h5
+      } else {
+        this.$copyText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      }
     },
 
-    onError() {
-      Toast.fail({
-        duration: 1500,
-        message: this.$t('mine.manageInfo.msg5')
-      });
-    },
+    // onCopy() {
+    //   Toast.success({
+    //     duration: 1500,
+    //     message: this.$t('mine.manageInfo.msg4')
+    //   });
+    // },
+
+    // onError() {
+    //   Toast.fail({
+    //     duration: 1500,
+    //     message: this.$t('mine.manageInfo.msg5')
+    //   });
+    // },
     
     cloesChangePsw() {
       this.openChangePsw = false;

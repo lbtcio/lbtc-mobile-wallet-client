@@ -8,6 +8,7 @@
 
 * {
     box-sizing: border-box;
+    touch-action: manipulation;
 }
 
 ::selection {
@@ -32,6 +33,10 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+body {
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
 
 input,
@@ -81,7 +86,11 @@ a {
 }
 
 .hash {
-    font-family: Consolas;
+    font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New",monospace;
+}
+
+.hash::-webkit-input-placeholder {
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
 
 .flex {
@@ -260,9 +269,9 @@ a {
     padding: 6px;
 }
 
-.input-with-label-item textarea::-webkit-input-placeholder {
-    /* line-height: 95px; */
-}
+/* .input-with-label-item textarea::-webkit-input-placeholder {
+    line-height: 95px;
+} */
 
 .input-with-label-item span {
     position: absolute;
@@ -497,11 +506,6 @@ a {
     align-items: center;
 }
 
-.van-checkbox__icon--checked .van-icon {
-    /* color: #fff;
-    border-color: #f6b330;
-    background-color: #f6b330; */
-}
 
 #vote-vote .van-checkbox__icon--checked .van-icon,
 #vote-votecancel .van-checkbox__icon--checked .van-icon {

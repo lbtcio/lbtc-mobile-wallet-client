@@ -10,6 +10,7 @@ let wConfig = {
   // network: 'testnet',
   point: 100000000,
   fees: {
+    regNickname: 1,   // Register nick name
     regDelegate: 1,   // Register as an agent
     vote: 0.01        // Vote agent
   },

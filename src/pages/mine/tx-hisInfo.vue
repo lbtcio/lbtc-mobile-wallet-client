@@ -62,7 +62,7 @@
             <div v-if="i.coinbase">
               Coinbase
             </div>
-            <div class="hash" v-if="!i.coinbase" v-clipboard:copy="i.addr" v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <div class="hash" v-if="!i.coinbase" @click="doCopy(i.addr)">
               {{i.addr}}
             </div>
           </div>
@@ -78,7 +78,7 @@
             <div v-if="i.scriptPubKey.type == 'nulldata'">
               {{'Unknown'}}
             </div>
-            <div class="hash" v-if="i.scriptPubKey.type != 'nulldata'" v-clipboard:copy="i.scriptPubKey.addresses[0]" v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <div class="hash" v-if="i.scriptPubKey.type != 'nulldata'" @click="doCopy(i.scriptPubKey.addresses[0])">
               {{i.scriptPubKey.addresses[0]}}
             </div>
           </div>
@@ -98,7 +98,7 @@
             <div class="hisInfo-item-title">
               {{$t('mine.txHisInfo.title3')}}
             </div>
-            <div class="hisInfo-item-content hash" v-clipboard:copy="txInfo.hash" v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <div class="hisInfo-item-content hash" @click="doCopy(txInfo.hash)">
               {{txInfo.hash | formatHash}}
             </div>
           </div>
@@ -106,7 +106,7 @@
             <div class="hisInfo-item-title">
               {{$t('mine.txHisInfo.title4')}}
             </div>
-            <div class="hisInfo-item-content hash" v-clipboard:copy="txInfo.blockhash" v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <div class="hisInfo-item-content hash" @click="doCopy(txInfo.blockhash)">
               {{txInfo.height}}
             </div>
           </div>
@@ -121,7 +121,7 @@
         </div>
         <div class="right">
           <qrcode-vue :value="'https://explorer.lbtc.io/transinfo?param=' + txInfo.hash" size="100" level="H" class="qrcode"></qrcode-vue>
-          <div class="copy-botton" v-clipboard:copy="'https://explorer.lbtc.io/transinfo?param=' + txInfo.hash" v-clipboard:success="onCopy" v-clipboard:error="onError">
+          <div class="copy-botton" @click="doCopy('https://explorer.lbtc.io/transinfo?param=' + txInfo.hash)">
             {{$t('mine.txHisInfo.title6')}}
           </div>
 
@@ -161,20 +161,65 @@ export default {
         this.$router.back();
       }
     },
-    
-    onCopy() {
-      Toast.success({
-        duration: 1500,
-        message: this.$t('mine.txHisInfo.title7')
-      });
-    },
 
-    onError() {
-      Toast.fail({
-        duration: 1500,
-        message: this.$t('mine.txHisInfo.title8')
-      });
-    }
+    doCopy(e) {
+      // is app
+      if (window.plus && this.isplusReady) {
+        this.appClipbordText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      // is h5
+      } else {
+        this.$copyText(e).then( r => {
+          Toast.success({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title7')
+          });
+        }, err => {
+          Toast.fail({
+            duration: 1500,
+            message: this.$t('mine.txHisInfo.title8')
+          });
+        })
+      }
+    },
+    
+    // onCopy() {
+    //     Toast.success({
+    //       duration: 1500,
+    //       message: this.$t('mine.txHisInfo.title7')
+    //     });
+    // },
+
+    // onError() {
+    //   Toast.fail({
+    //     duration: 1500,
+    //     message: this.$t('mine.txHisInfo.title8')
+    //   });
+    // }
+
+    // setClipbordText(txt) {
+    //   if(!window.plus) return;
+    //   if(plus.os.android) {
+    //     var Context = plus.android.importClass("android.content.Context");
+    //     var main = plus.android.runtimeMainActivity();
+    //     var clip = main.getSystemService(Context.CLIPBOARD_SERVICE);
+    //     plus.android.invoke(clip,"setText",txt);
+    //   } else {
+    //     var UIPasteboard = plus.ios.importClass("UIPasteboard");
+    //     var generalPasteboard = UIPasteboard.generalPasteboard();
+    //     generalPasteboard.setValueforPasteboardType(txt,"public.utf8-plain-text");
+    //   }
+    //   mui.toast('网址复制成功');
+    // }
   }
 }
 </script>

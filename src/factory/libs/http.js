@@ -5,8 +5,6 @@ import key from './key'
 import md5 from "crypto-js/md5";
 import { Toast } from "vant";
 
-axios.defaults.retry = 0;   // Retry times
-axios.defaults.retryDelay = 50000;
 axios.defaults.baseURL = api.baseURL;
 
 let localeLang = localStorage.getItem('locale') ? localStorage.getItem('locale') : 'zh';
@@ -34,7 +32,7 @@ axios.interceptors.request.use(
     },
     error => {
         error = JSON.stringify(error)
-        saveLogToLocale(error);
+        saveLogToLocale(error, 1);
         return Promise.reject(error);
     }
 )
@@ -43,17 +41,20 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
     response => {
         if (response.data.error) {
-            Toast({
-                duration: 2000,
-                message: response.data.msg
-            });
-            saveLogToLocale(JSON.stringify(response));
+            if (!response.config.params.isHide) {
+                Toast({
+                    duration: 2000,
+                    message: response.data.msg
+                });
+            }
+            saveLogToLocale(JSON.stringify(response), 2);
             return Promise.reject(response.data.msg)
         }
         return response
         
     },
     error => {
+        error.message = 'Error';
         if (error && error.response) {
             if (error.response.status >= 400 && error.response.status < 500) {
                 error.message = lang[localeLang].requestError;
@@ -67,17 +68,17 @@ axios.interceptors.response.use(
             duration: 2000,
             message: error.message
         });
-        error = JSON.stringify(error)
-        saveLogToLocale(error);
-        return Promise.reject(error)
+        saveLogToLocale(JSON.stringify(error), 3);
+        return Promise.reject(error.message)
     }
 );
 
-function saveLogToLocale(e) {
+function saveLogToLocale(e, n) {
     e = JSON.parse(e);
     let myDate = new Date();
     let localeLog = localStorage.getItem('Log') ? JSON.parse(localStorage.getItem('Log')) : [];
     let logObj = {
+        'number': n,
         'timestamp': myDate.getTime(),
         'time': myDate.toLocaleString(),
         'msg': JSON.stringify(e)

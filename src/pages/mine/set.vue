@@ -1,7 +1,5 @@
 <style lang="scss" scoped>
-#mine-set{
-  
-}
+
 </style>
 <template>
   <div id="mine-set">

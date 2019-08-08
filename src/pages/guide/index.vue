@@ -79,13 +79,11 @@ export default {
   activated() {},
   methods: {
     toMain() {
-      this.localforage.getItem('current_wallet').then( res => {
-        if (res) {
-          this.$router.push({ path: "/" });
-        } else {
-          this.$router.push({ path: "/create-index" });
-        }
-      })
+      if (this.walletDB.current) {
+        this.$router.push({ path: "/" });
+      } else {
+        this.$router.push({ path: "/create-index" });
+      }
     }
   }
 };

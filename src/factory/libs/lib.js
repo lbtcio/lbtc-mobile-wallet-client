@@ -2,19 +2,23 @@ import wConfig from "../wallet/config";
 
 
 let lib = {
-  appClipbordText: function(txt) {
-    if(!window.plus) return Promise.reject(false);
-    if(plus.os.android) {
-      var Context = plus.android.importClass("android.content.Context");
-      var main = plus.android.runtimeMainActivity();
-      var clip = main.getSystemService(Context.CLIPBOARD_SERVICE);
-      plus.android.invoke(clip,"setText",txt);
+  appClipbordText: function(textValue) {
+    if(!window.plus) return Promise.reject(true);
+    textValue = String(textValue);
+    if(plus.os.name == 'Android') {
+      let Context = plus.android.importClass("android.content.Context");
+      let main = plus.android.runtimeMainActivity();
+      let clip = main.getSystemService(Context.CLIPBOARD_SERVICE);
+      plus.android.invoke(clip,"setText",textValue);
+      return Promise.resolve(true)
+    } else if (plus.os.name == 'iOS') {
+      let UIPasteboard = plus.ios.importClass("UIPasteboard");
+      let generalPasteboard = UIPasteboard.generalPasteboard();
+      generalPasteboard.setValueforPasteboardType(textValue,"public.utf8-plain-text");
+      return Promise.resolve(true)
     } else {
-      var UIPasteboard = plus.ios.importClass("UIPasteboard");
-      var generalPasteboard = UIPasteboard.generalPasteboard();
-      generalPasteboard.setValueforPasteboardType(txt,"public.utf8-plain-text");
+      return Promise.reject(true)
     }
-    return Promise.resolve(true)
   },
 
   returnToSuperior: function () {
@@ -45,6 +49,15 @@ let lib = {
         return true
     } else {
         return false
+    }
+  },
+
+  isNickname: function (e) {
+    let re = /^[A-Za-z0-9]{1}[A-Za-z0-9\:\-\_\.\@\&\#]{0,15}$/;
+    if (re.test(e)) {
+      return true
+    } else {
+      return false
     }
   },
 

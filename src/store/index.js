@@ -44,7 +44,7 @@ const store = new Vuex.Store({
             indexAction: 0,
             isSwiper: false,
             newsIndexAction: {
-                name: 'newsAll',
+                name: 'report',
                 index: 0,
             },
             lbtcIndexAction: {
@@ -178,15 +178,12 @@ const store = new Vuex.Store({
                     } else {
                         c_h = state.walletDB.accounts[data.address].currentHeight;
                     }
-                    console.log(c_h);
-                    console.log(n_h);
                     return Promise.resolve(
                         $http.get($api.api.getTxByAddr, {
                             addr: data.address,
                             start: c_h,
                             end: n_h
                         }).then( l => {
-                            console.log(l.msg);
                             return Promise.resolve(l.msg);
                         })
                     )
@@ -213,7 +210,6 @@ const store = new Vuex.Store({
         checkSync({dispatch, commit, state}, address) {
             if (state.walletDB.accounts[address].history.length) {
                 let latestTxs = state.walletDB.accounts[address].history.slice(0, 3);
-                console.log(latestTxs)
                 let hashObj = {};
                 let hash = [];
                 latestTxs.forEach((item, index) => {

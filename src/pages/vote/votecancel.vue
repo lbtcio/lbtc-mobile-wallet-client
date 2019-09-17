@@ -179,12 +179,15 @@ export default {
       if (done) {
         this.$http.get(this.$api.api.getVoteByAddr, {param: this.walletDB.current, addr: this.walletDB.current}).then( res => {
           if (res.error) {
-            this.$store.state.vote.votesList = []
+            this.$store.state.vote.votesList = [];
           } else {
-            this.$store.state.vote.votesList = res.msg
+            this.$store.state.vote.votesList = res.msg;
           }
+          done()
+        }).catch( e=> {
+          this.$store.state.vote.votesList = [];
+          done()
         })
-        done()
       }
     },
 

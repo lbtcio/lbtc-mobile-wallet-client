@@ -46,9 +46,9 @@ axios.interceptors.response.use(
                     duration: 2000,
                     message: response.data.msg
                 });
+                return Promise.reject(response.data.msg)
             }
             saveLogToLocale(JSON.stringify(response), 2);
-            return Promise.reject(response.data.msg)
         }
         return response
         

@@ -4,7 +4,7 @@
 
 let wConfig = {
   feeRate: 20,
-  version: '1.0.4',
+  version: '1.0.5',
   txSetVersion: '65282',
   network: 'bitcoin',
   // network: 'testnet',

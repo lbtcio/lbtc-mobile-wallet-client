@@ -252,6 +252,10 @@ export default {
             this.$store.state.vote.votesList = data[1].msg;
           }
           done()
+        }).catch( e=> {
+          this.$store.state.vote.forgeList = [];
+          this.$store.state.vote.votesList = [];
+          done()
         })
       }
     },

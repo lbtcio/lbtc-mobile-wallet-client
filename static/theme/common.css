@@ -49,6 +49,7 @@ button,
 select,
 textarea {
     outline: none;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
 
 input,
@@ -218,7 +219,6 @@ a {
     padding: 0;
     width: 100%;
     border: 1px solid #999;
-    border-radius: 0;
     text-indent: 1rem;
     color: #666;
     letter-spacing: 1px;
@@ -252,7 +252,6 @@ a {
 .input-with-label-item {
     margin-bottom: 24px;
     position: relative;
-    z-index: 0;
 }
 
 .input-with-label-item label {
@@ -261,6 +260,8 @@ a {
 
 .input-with-label-item input,
 .input-with-label-item textarea {
+    -webkit-appearance: none;
+    border-radius: 0;
     color: #666;
     font-size: 14px;
     width: 100%;
@@ -268,10 +269,6 @@ a {
     border-bottom: 1px solid #ccc;
     padding: 6px;
 }
-
-/* .input-with-label-item textarea::-webkit-input-placeholder {
-    line-height: 95px;
-} */
 
 .input-with-label-item span {
     position: absolute;
@@ -296,6 +293,10 @@ a {
     color: #e51313;
     font-size: 12px;
     margin: 0 5px;
+}
+
+input[readonly] {
+    border-bottom: none;
 }
 
 /* icon */
@@ -493,6 +494,13 @@ a {
 
 .van-nav-bar__right {
     font-size: 16px;
+    right: 0;
+    padding: 0 15px;
+}
+
+.van-nav-bar__left {
+    left: 0;
+    padding: 0 15px;
 }
 
 .van-nav-bar__text {
@@ -770,4 +778,23 @@ a {
     pointer-events: none;
     cursor: default;
     opacity: 0.6;
+}
+
+/* Article */ 
+.detail-detail {
+    -webkit-user-select: text;
+    user-select: text;
+    
+}
+.detail-detail p img {
+    width: 100%;
+}
+.detail-detail ul {
+    list-style: disc;
+    margin-left: 20px;
+}
+.detail-detail ul li {
+    color: #666;
+    font-size: 14px;
+    letter-spacing: 1px;
 }

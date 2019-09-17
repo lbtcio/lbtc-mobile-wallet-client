@@ -13,4 +13,6 @@ dist/
 /debug.log
 /package-lock.json
 /old-dist
-/src/pages/register
+/src/pages/news/index.old.vue
+/src/pages/news/lbtc.vue
+/src/pages/news/news.vue

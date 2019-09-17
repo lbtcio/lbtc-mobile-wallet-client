@@ -9,13 +9,6 @@
     font-size: 16px;
     font-weight: bold;
   }
-  .content {
-    p {
-      img{
-        width: 100%;
-      }
-    }
-  }
   .author {
     margin-bottom: 20px;
     font-size: 14px;
@@ -27,10 +20,7 @@
       color: #999;
     }
   }
-  .detail-detail {
-    -webkit-user-select: text;
-    user-select: text;
-  }
+  
   .right-icon {
     vertical-align: middle;
     text-align: center;
@@ -46,7 +36,7 @@
 </style>
 <template>
   <div id="news-detail">
-    <van-nav-bar :z-index="1000" fixed left-arrow @click-left="$router.goBack()">
+    <van-nav-bar :z-index="1000" fixed left-arrow :title="info.title" @click-left="$router.goBack()">
       <div slot="right" class="right-icon">
         <img class="collection" @click="collection" :src="likeStatus ? 'https://lbtc.io/wallet/static/img/like-o.png' : 'https://lbtc.io/wallet/static/img/like.png' " alt="">
         <!-- <img class="share" src="https://lbtc.io/wallet/static/img/share.png" alt=""> -->
@@ -60,7 +50,7 @@
         <span class="time">{{info.date}}</span>
       </div>
     
-      <div class="detail-detail" v-html="info.content"></div>
+      <div class="detail-detail" id="articleContent" v-html="info.content"></div>
     </div>
   </div>
 </template>
@@ -81,14 +71,24 @@ export default {
   created(){
     this.detailInit()
   },
-  mounted(){},
+  mounted(){
+
+    let aArr = document.getElementById("articleContent").getElementsByTagName('a');
+    for (let i = 0; i < aArr.length; i++) {
+      let item = aArr[i];
+      item.setAttribute('data-href', item.getAttribute('href'));
+      item.setAttribute('href', 'javascript:;');
+      item.onclick = function () { 
+        plus.runtime.openURL(item.getAttribute('data-href'));
+       }
+    }
+    
+  },
   methods:{
     detailInit() {
       this.info = JSON.parse(this.$route.query.content);
       let reg = new RegExp('<img', 'ig');
       this.info.content = this.info.content.replace( reg, '<img style="width: 100%;"');
-
-      this.newsLikeList = this.localStore.get('news_like_list');
 
       this.localforage.getItem('news_collection').then( res => {
         if (res) {

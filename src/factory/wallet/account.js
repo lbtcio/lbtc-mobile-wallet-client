@@ -75,14 +75,16 @@ class WalletDB {
           }
         }
       }
-
-      for (let index1 = 0; index1 < currentHistory.length; index1++) {
-        const item1 = currentHistory[index1];
-        for (let index2 = 0; index2 < this.accounts[address].history.length; index2++) {
-          const item2 = this.accounts[address].history[index2];
-          if (item2.hash == item1.hash) {
-            currentHistory.splice(index1, 1);
-            index1 = index1 - 1;
+      
+      if (currentHistory.length && this.accounts[address].history.length) {
+        for (let index1 = 0; index1 < currentHistory.length; index1++) {
+          const item1 = currentHistory[index1];
+          for (let index2 = 0; index2 < this.accounts[address].history.length; index2++) {
+            const item2 = this.accounts[address].history[index2];
+            if (item2.hash == item1.hash) {
+              currentHistory.splice(index1, 1);
+              index1 = index1 - 1;
+            }
           }
         }
       }

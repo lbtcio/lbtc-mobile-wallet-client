@@ -130,7 +130,6 @@
             <span @click.stop="moreBalance" class="balance">
               {{decimal(availableBalance).plus(unavailableBalance).toNumber()}} LBTC
             </span>
-            <span @click.stop="moreBalance" class="sign">LBTC</span>
             <span @click.stop="moreBalance" class="more" v-if="unavailableBalance">
               <van-icon name="arrow" />
             </span>

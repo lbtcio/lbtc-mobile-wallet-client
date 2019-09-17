@@ -39,6 +39,10 @@
   .qr-show {
     opacity: 1; 
   }
+  .warn-msg {
+    font-size: 12px;
+    color: #e51313;
+  }
 }
 </style>
 <template>
@@ -57,6 +61,9 @@
 
       <div class="input-group">
         <button class="yellow" @click="doCopy(walletDB.current)">{{$t('wallet.receive.copyToClipboard')}}</button>
+        <div class="warn-msg">
+          {{$t('wallet.receive.warnMsg')}}
+        </div>
       </div>
     </div>
   </div>

@@ -85,6 +85,15 @@ export default {
                 'Modify known bug',
                 'Optimize user experience'
             ]
+        },
+        {
+            version: '1.0.5',
+            content: [
+                'Nickname registration feature added',
+                'Transfer by nickname feature added',
+                'News section layout changed',
+                'A few bugs fixed'
+            ]
         }
     ],
     create: {
@@ -97,10 +106,10 @@ export default {
             walletName: 'Wallet Name',
             walletPassword: 'Wallet Password',
             reWalletPassword: 'Confirm Password',
-            checkbox1: 'I agree to the Protocal of Usage',
-            checkbox2: 'Protocal of Usage',
+            checkbox1: 'I agree to the',
+            checkbox2: 'Term of Use',
             createWallet: 'Create Wallet',
-            msg: 'Please note! Lightning Bitcoin wallet does not store user passwords, cannot provide retrieval and reset function, please be sure to save the set password!',
+            msg: 'Warning! This wallet does not store your password, please save your password in a safe place. You are unable to retrieve or reset your password if you forget it.',
             termTitle: 'Terms of Service and Privacy policy',
             walletNameMsg: 'The wallet name cannot be empty',
             walletPasswordMsg1: 'Password cannot be empty',
@@ -238,7 +247,7 @@ export default {
                 {
                     id: 6,
                     title: 'How to transfer/receive?',
-                    content: 'On the MyLBTC wallet list page, click Transfer and Receipt to start the transfer: select the transfer, enter the payee address and transfer amount, verify the transaction password, then complete the transfer; select the payment, page display receipt 2D The code, the payer can scan the QR code to complete the transfer, or the payee clicks the QR code to copy the payment address, and the share is sent to the payer.'
+                    content: "On the MyLBTC wallet list page, click Transfer and Receipt to start the transfer: select the transfer, enter the beneficiary's address and transfer amount, verify the transaction password, then complete the transfer; select the payment, page display receipt 2D The code, the payer can scan the QR code to complete the transfer, or the beneficiary clicks the QR code to copy the payment address, and the share is sent to the payer."
                 },
                 {
                     id: 7,
@@ -260,7 +269,7 @@ export default {
         index: {
             manager: 'Manage Wallet',
             his: 'Transaction Records',
-            addrs: 'Contacts',
+            addrs: 'Address Book',
             set: 'Settings',
             help: 'Help',
             about: 'About us'
@@ -326,6 +335,24 @@ export default {
         }
     },
     news: {
+        lbtcNews: [
+            {
+                name: 'Report',
+                class: 'report'
+            },
+            {
+                name: 'Technology',
+                class: 'tech'
+            },
+            {
+                name: 'Other',
+                class: 'article'
+            },
+            {
+                name: 'Favorites',
+                class: 'collection'
+            }
+        ],
         topLevelChannel: {
             news: 'News',
             lbtc: 'LBTC'
@@ -431,28 +458,30 @@ export default {
             confirmInfoTxType: 'Send',
             optional: 'Optional',
             payAddr: 'Payment Address',
-            payee: 'Payee',
-            payeeNickname: 'Payee Nickname',
-            payeeAddress: 'Payee Address',
-            payeeNicknamePlaceholder: 'Please enter the payee nickname(Automatically get the address)',
-            payeeAddressPlaceholder: 'Please enter the payee address',
+            payee: 'Beneficiary',
+            address: 'Address',
+            nickname: 'Nickname',
+            payeeNickname: "Beneficiary's Nickname",
+            payeeAddress: "Beneficiary's Address",
+            payeeNicknamePlaceholder: 'Please enter the beneficiary nickname',
+            payeeAddressPlaceholder: 'Please enter the beneficiary address',
             receiveAddr: "Receiver's Address",
             receiveAddrPlaceholder: "Please enter the  receiver's address or nick name",
             payMoney: 'Amount',
             balance: 'Balance',
             moneyInputPlaceholder: 'Input Amount',
             next: 'Send',
-            selectionAddr: 'Select contact',
-            noAddrContent: 'No contact, please',
-            noAddrAddAddr: 'Add contact',
-            checkWarnMsg1: 'Cannot be empty',
-            checkWarnMsg2: 'Address wrong',
-            checkWarnMsg3: 'Invalid amount',
-            checkWarnMsg4: 'Amount in excess of balance',
-            checkWarnMsg5: 'The amount is too small',
-            checkWarnMsg6: 'No more than 8 decimal places',
-            checkWarnMsg7: 'Address cannot be the same',
-            checkWarnMsg8: 'Nickname wrong'
+            selectionAddr: 'Select beneficiary',
+            noAddrContent: 'No beneficiary, please',
+            noAddrAddAddr: 'Add beneficiary',
+            cannotBeEmpty: 'Cannot be empty',
+            addressWrong: 'Address wrong',
+            nicknameWrong: 'Nickname wrong',
+            invalidAmount: 'Invalid amount',
+            excessOfBalance: 'Amount in excess of balance',
+            amountTooSmall: 'The amount is too small',
+            more8decimal: 'No more than 8 decimal places',
+            diffAddress: 'Address cannot be the same'
         },
         index: {
             assets: 'Assets',
@@ -474,6 +503,7 @@ export default {
         receive: {
             navTitle: 'Receive LBTC',
             title: "Receiver's Address",
+            warnMsg: 'Please slide down at the blank area of the wallet page to update your number of LBTC',
             copyToClipboard: 'Copy to the clipboard',
             msg1: 'Copied',
             msg2: 'Copy error'
@@ -521,10 +551,12 @@ export default {
         addr: 'Address',
         nickname: 'Nickname',
         nicknamePlaceholder: 'Please enter Nickname',
-        warnMsg: 'Register name length larger than 32 bytes',
+        nicknameRole: 'A nickname must be composed of digits and/or English letters/punctuation marks, and no more than 16 characters',
+        occupied: 'Occupied',
         confirmInfoTxType: 'Register Nick Name',
         register: 'Register',
-        registered: 'Registered'
+        registered: 'Finished',
+        warnMsg: 'Register a nickname for 1LBTC'
     },
     token: {
         navTitle: 'Create Token',

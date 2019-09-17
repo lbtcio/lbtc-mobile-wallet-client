@@ -109,7 +109,7 @@ export default {
         if (this.isAddress(this.res)) {
           warnMsg = '';
         } else {
-          warnMsg = this.$t('wallet.send.checkWarnMsg2');
+          warnMsg = this.$t('wallet.send.addressWrong');
         }
       }
       if (warnMsg) {

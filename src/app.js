@@ -77,10 +77,6 @@ const app = new Vue({
     wallet,
     async created() {
         await this.initWalletDB();
-        if (store.state.isplusReady) {
-            plus.navigator.setStatusBarStyle('light');
-            plus.navigator.setStatusBarBackground('#317DC0');
-        }
     },
     methods: {
         initWalletDB() {

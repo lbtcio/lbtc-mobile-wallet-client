@@ -1,5 +1,8 @@
 <style lang="scss" scoped>
 .news-items {
+  .mint-loadmore {
+    min-height: calc(100vh - 88px);
+  }
   .list-enter-active {
     transition: all 1s;
   }
@@ -37,7 +40,7 @@
 
       <div class="news-content" v-if="items.length" is="transition-group" name="list">
         <div class="news-item" v-for="(item, index) in items" :key="index" @click="open_detail(item)">
-          <div class="item-img" :style="item.cover" v-if="item.cover"></div>
+          <div class="item-img" :style="'background-image:url(' + item.thumbnail_images.medium.url + ');'" v-if="item.thumbnail_images"></div>  <!-- item.thumbnail_images.medium.url -->
           <div class="item-content">
             <div class="item-tittle">
               <div class="ellipsis-2">
@@ -109,14 +112,14 @@ export default {
   },
   mounted() {
     
-    },
+  },
   activated() {
     
-    },
+  },
   methods: {
     newsInit() {
       this.params = this.typeParams();
-      if (this.newsClassContent['news_' + this.value].length) {
+      if (this.newsClassContent['news_' + this.value] && this.newsClassContent['news_' + this.value].length) {
         this.items = this.newsClassContent['news_' + this.value];
         this.checkLength(this.newsClassContent['news_' + this.value]);
         this.handleLocaltion('get');
@@ -208,13 +211,6 @@ export default {
           } else {
             currentContent = res.msg;
           }
-          if (currentContent.length) {
-            currentContent.forEach((item, index) => {
-              if (item.comments.length && item.comments[0].content) {
-                item.cover = this.catchImgSrc(item.comments[0].content);
-              }
-            });
-          }
           return Promise.resolve(currentContent);
         }).catch(e => {
             currentContent = [];
@@ -241,43 +237,21 @@ export default {
 
     typeParams() {
       let params = {};
-      if (this.indexAction) { // lbtc
-        switch (this.value) {
-          case 'lbtcAll':
-            params = { cate: 'lbtc'}
-            break;
-          case 'report':
-            params = { cate: 'lbtc', tag: 'report'}
-            break;
-          case 'announcement':
-            params = { cate: 'lbtc', tag: 'announcement'}
-            break;
-          case 'tutorial':
-            params = { cate: 'lbtc', tag: 'tutorial'}
-            break;
-          case 'article':
-            params = { cate: 'lbtc', tag: 'article'}
-            break;
-          default:
-            break;
-        }
-      } else {                // newslbtc
-        switch (this.value) {
-          case 'newsAll':
-            params = { cate: 'news'}
-            break;
-          case 'lbtcnews':
-            params = { cate: 'news', tag: 'lbtcnews'}
-            break;
-          case 'information':
-            params = { cate: 'news', tag: 'information'}
-            break;
-          case 'collection':
-            params = { cate: 'news', tag: 'collection'}
-            break;
-          default:
-            break;
-        }
+      switch (this.value) {
+        case 'report':
+          params = { cate: 'report'}
+          break;
+        case 'tech':
+          params = { cate: 'tech'}
+          break;
+        case 'article':
+          params = { cate: 'other'}
+          break;
+        case 'collection':
+          params = { cate: 'collection'}
+          break;
+        default:
+          break;
       }
       return params
     },

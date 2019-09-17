@@ -197,6 +197,12 @@ const router = new VueRouter({
 			path: '/vote-votecancel',
 			name: 'vote-votecancel',
 			component: (resolve) => require(['./pages/vote/votecancel.vue'], resolve)
+		},
+		// Register
+		{
+			path: '/register-index',
+			name: 'register-index',
+			component: (resolve) => require(['./pages/register/index.vue'], resolve)
 		}
 		// // Governance
 		// {
@@ -213,12 +219,6 @@ const router = new VueRouter({
 		// 	path: '/governance-proposal',
 		// 	name: 'governance-proposal',
 		// 	component: (resolve) => require(['./pages/governance/proposal.vue'], resolve)
-		// },
-		// // Register
-		// {
-		// 	path: '/register-index',
-		// 	name: 'register-index',
-		// 	component: (resolve) => require(['./pages/register/index.vue'], resolve)
 		// },
 		// // Token
 		// {

@@ -79,6 +79,10 @@
           <!-- OP_RETURN end -->
 
           <!-- Send start -->
+          <tr class="confirm-info-item" v-if="coinselectStatus && !isOPRETURN && outputs[0].nickname">
+            <td class="confirm-info-title">{{$t('wallet.send.payeeNickname')}}:</td>
+            <td class="confirm-info-content hash">{{outputs[0].nickname}}</td>
+          </tr>
           <tr class="confirm-info-item" v-if="coinselectStatus && !isOPRETURN">
             <td class="confirm-info-title">{{$t('commom.tx.confirmInfoReceiveAddr')}}:</td>
             <td class="confirm-info-content hash">{{outputs[0].address}}</td>

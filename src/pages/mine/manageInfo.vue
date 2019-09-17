@@ -350,7 +350,6 @@ export default {
     },
 
     resyncData(address) {
-
       this.$dialog.confirm({
         title: this.$t('mine.manageInfo.confirmResync'),
         cancelButtonText: this.$t('commom.passDialog.cancelButtonText'),
@@ -368,11 +367,12 @@ export default {
           address: address,
           currentHeight: 1
         }).then( data => {
-          this.lbtcWalletDB.accounts[this.addr].histroy = [];
-          this.lbtcWalletDB.accounts[this.addr].availableTxs = [];
-          this.lbtcWalletDB.accounts[this.addr].availableBalance = 0;
-          this.lbtcWalletDB.accounts[this.addr].unavailableTxs = [];
-          this.lbtcWalletDB.accounts[this.addr].unavailableBalance = 0;
+          this.lbtcWalletDB.accounts[address].history = [];
+          this.lbtcWalletDB.accounts[address].availableTxs = [];
+          this.lbtcWalletDB.accounts[address].availableBalance = 0;
+          this.lbtcWalletDB.accounts[address].unavailableTxs = [];
+          this.lbtcWalletDB.accounts[address].unavailableBalance = 0;
+          
           this.lbtcWalletDB.insertHistroy(address, data);
           this.$store.dispatch('saveWalletDB', this.lbtcWalletDB).then(r => {
             Toast.clear();
@@ -414,20 +414,6 @@ export default {
         })
       }
     },
-
-    // onCopy() {
-    //   Toast.success({
-    //     duration: 1500,
-    //     message: this.$t('mine.manageInfo.msg4')
-    //   });
-    // },
-
-    // onError() {
-    //   Toast.fail({
-    //     duration: 1500,
-    //     message: this.$t('mine.manageInfo.msg5')
-    //   });
-    // },
     
     cloesChangePsw() {
       this.openChangePsw = false;

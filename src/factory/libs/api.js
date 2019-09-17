@@ -18,6 +18,8 @@ let api = {
     getTxByAddr: "mgettxbyaddr",
     gettxinfo: 'mgettxinfo',
     msendrawtransaction: 'msendrawtransaction',
+    getUsername: 'mgetaddressname',
+    getAddress: 'mgetnameaddress',
     // Nodes
     getListDelegates: 'mgetlistdelegates',
     getVoteByAddr: 'mgetvotebyaddress',

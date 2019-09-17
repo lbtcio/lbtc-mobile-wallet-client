@@ -85,6 +85,15 @@ export default {
                 '修改已知Bug',
                 '优化用户体验'
             ]
+        },
+        {
+            version: '1.0.5',
+            content: [
+                '增加昵称注册',
+                '增加通过昵称转账',
+                '修改新闻板块布局',
+                '修改已知Bug'
+            ]
         }
     ],
     create: {
@@ -326,6 +335,24 @@ export default {
         }
     },
     news: {
+        lbtcNews: [
+            {
+                name: '月报',
+                class: 'report'
+            },
+            {
+                name: '技术',
+                class: 'tech'
+            },
+            {
+                name: '其他',
+                class: 'article'
+            },
+            {
+                name: '收藏',
+                class: 'collection'
+            }
+        ],
         topLevelChannel: {
             news: '新闻资讯',
             lbtc: 'LBTC'
@@ -432,9 +459,11 @@ export default {
             optional: '选填',
             payAddr: '付款地址',
             payee: '收款人',
+            address: '地址',
+            nickname: '昵称',
             payeeNickname: '收款人昵称',
             payeeAddress: '收款人地址',
-            payeeNicknamePlaceholder: '请输入收款人昵称(将自动获取地址)',
+            payeeNicknamePlaceholder: '请输入收款人昵称',
             payeeAddressPlaceholder: '请输入收款人钱包地址',
             receiveAddr: '收款地址',
             receiveAddrPlaceholder: '请输入收款人钱包地址或者昵称',
@@ -442,17 +471,17 @@ export default {
             balance: '余额',
             moneyInputPlaceholder: '输入金额',
             next: '转账',
-            selectionAddr: '选择联系人',
-            noAddrContent: '暂无联系人，请',
-            noAddrAddAddr: '添加联系人' ,
-            checkWarnMsg1: '不能为空',
-            checkWarnMsg2: '地址错误',
-            checkWarnMsg3: '无效金额',
-            checkWarnMsg4: '金额超出余额',
-            checkWarnMsg5: '金额太小',
-            checkWarnMsg6: '不能超过8位小数',
-            checkWarnMsg7: '地址不能相同',
-            checkWarnMsg8: '昵称错误'
+            selectionAddr: '选择收款人',
+            noAddrContent: '暂无收款人，请',
+            noAddrAddAddr: '添加收款人',
+            cannotBeEmpty: '不能为空',
+            addressWrong: '地址错误',
+            nicknameWrong: '昵称错误',
+            invalidAmount: '无效金额',
+            excessOfBalance: '余额不足',
+            amountTooSmall: '金额太小',
+            more8decimal: '不能超过8位小数',
+            diffAddress: '地址不能相同'
         },
         index: {
             assets: '资产',
@@ -474,6 +503,7 @@ export default {
         receive: {
             navTitle: 'LBTC收款',
             title: '收款地址',
+            warnMsg: '收款后请在主界面的空白部分进行下拉操作，以刷新资产数量',
             copyToClipboard: '复制到剪贴板',
             msg1: '已复制',
             msg2: '复制错误'
@@ -520,10 +550,12 @@ export default {
         addr: '地址',
         nickname: '昵称',
         nicknamePlaceholder: '请输入名称',
-        warnMsg: '昵称不能超过32个字节',
+        nicknameRole: '昵称必须是16位以内的数字、英文字母、英文字符或其组合',
+        occupied: '已被注册',
         confirmInfoTxType: '注册昵称',
         register: '注册',
-        registered: '已注册'
+        registered: '已注册',
+        warnMsg: '注册昵称需要花费1LBTC'
     },
     token: {
         navTitle: '创建Token',

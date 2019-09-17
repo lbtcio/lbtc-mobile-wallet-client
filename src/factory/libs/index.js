@@ -7,7 +7,7 @@ import calc from 'calculatorjs';
 import bign from 'big-number';
 import decimal from 'decimal.js';
 import moment from "moment";
-import store from "store";
+// import store from "store";
 
 
 Vue.prototype.$http = http;
@@ -16,7 +16,7 @@ Vue.prototype.localforage = localforage;
 Vue.prototype.calc = calc;
 Vue.prototype.bign = bign;
 Vue.prototype.decimal = decimal;
-Vue.prototype.localStore = store;
+// Vue.prototype.localStore = store;
 
 Object.keys(lib).map(key => {
     if (lib[key] instanceof Function) {

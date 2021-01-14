@@ -12,6 +12,7 @@ Lightning Wallet is a mobile light wallet app designed for Lightning Bitcoin (LB
 
 
 ```shell
+
 npm install
 ```
 
@@ -27,10 +28,12 @@ npm run dev
 
 
 ```shell
+
 npm run build
 ```
 
 Build MyLBTC App Bundles
 ========================
+
 [Download](http://www.dcloud.io/) Hbuilder tool and install. You can create a webapp project with HBuilder, and copy the files in the `/dist` folder to the project root directory, and build app bundles.
 

@@ -1,9 +1,12 @@
 lbtc-mobile-wallet-client
+
 =========================
 
 
 
-Lightning Wallet is a mobile light wallet app designed for Lightning Bitcoin (LBTC). Currently, it only supports LBTC transfer and node voting. It is designed to provide LBTC users with a safe and secure digital asset wallet application.
+Lightning Wallet is a mobile light wallet app designed for Lightning Bitcoin (LBTC). Currently, it only supports LBTC transfer and node voting. 
+
+It is designed to provide LBTC users with a safe and secure digital asset wallet application.
 
 
 ## Install & Run
@@ -39,6 +42,7 @@ Build MyLBTC App Bundles
 
 
 [Download](http://www.dcloud.io/) Hbuilder tool and install.
+
 You can create a webapp project with HBuilder, 
 and copy the files in the `/dist` folder to the project root directory, 
 and build app bundles.

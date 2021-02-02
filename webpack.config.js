@@ -1,4 +1,5 @@
 const path = require('path'),
+
     Vue = require('Vue'),
     webpack = require('webpack'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
@@ -57,9 +58,13 @@ module.exports = {
     }
 }
 
+
 const isDebugMode = process.env.NODE_ENV !== 'production';
 
+
 Vue.config.devtools = isDebugMode;
+
 Vue.config.productionTip = isDebugMode;
+
 
 if (process.env.NODE_ENV === 'production') module.exports.devtool = 'cheap-module-source-map';

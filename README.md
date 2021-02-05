@@ -1,9 +1,7 @@
 lbtc-mobile-wallet-client
 
 
-
 =========================
-
 
 
 
@@ -19,40 +17,30 @@ It is designed to provide LBTC users with a safe and secure digital asset wallet
 
 
 
-
 ### Install
 
 
-
 ```shell
-
 
 
 npm install
 ```
 
 
-
 ### Development (Run)
-
 
 
 ```shell
 
-
 npm run dev
 ```
-
-
 
 
 ### Build
 
 
 
-
 ```shell
-
 
 
 npm run build
@@ -60,22 +48,16 @@ npm run build
 
 
 
-
 Build MyLBTC App Bundles
 ========================
-
-
 
 
 [Download](http://www.dcloud.io/) Hbuilder tool and install.
 
 
-
 You can create a webapp project with HBuilder, 
 
-
 and copy the files in the `/dist` folder to the project root directory, 
-
 
 and build app bundles.
 

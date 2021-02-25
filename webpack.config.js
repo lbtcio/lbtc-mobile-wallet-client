@@ -1,12 +1,10 @@
 const path = require('path'),
 
-      
     Vue = require('Vue'),
     webpack = require('webpack'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     CopyWebpackPlugin = require('copy-webpack-plugin'),
     CleanWebpackPlugin = require('clean-webpack-plugin');
-
 
 module.exports = {
     entry: ['babel-polyfill', './src/app.js'],
@@ -66,14 +64,8 @@ module.exports = {
 
 const isDebugMode = process.env.NODE_ENV !== 'production';
 
-
-
 Vue.config.devtools = isDebugMode;
 
-
-
 Vue.config.productionTip = isDebugMode;
-
-
 
 if (process.env.NODE_ENV === 'production') module.exports.devtool = 'cheap-module-source-map';

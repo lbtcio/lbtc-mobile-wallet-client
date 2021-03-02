@@ -10,6 +10,7 @@
         "proto": "pbjs -t json-module -w commonjs -o src/proto/proto.js src/proto/*.proto"
     },
     
+    
     "author": "vacant",
     "license": "ISC",
     "dependencies": {
@@ -49,6 +50,7 @@
         "vuex": "^3.0.1"
     },
     
+    
     "devDependencies": {
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.4",
@@ -74,6 +76,7 @@
         "webpack-cli": "^2.0.11",
         "webpack-dev-server": "^3.1.1"
     }
+    
     
 }
 

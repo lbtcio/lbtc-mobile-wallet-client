@@ -1,12 +1,10 @@
 const path = require('path'),
 
-      
     Vue = require('Vue'),
     webpack = require('webpack'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     CopyWebpackPlugin = require('copy-webpack-plugin'),
     CleanWebpackPlugin = require('clean-webpack-plugin');
-
 
 module.exports = {
     entry: ['babel-polyfill', './src/app.js'],
@@ -15,7 +13,6 @@ module.exports = {
         publicPath: '',
         filename: 'build.js'
     },
-    
     
     plugins: [
         new HtmlWebpackPlugin({
